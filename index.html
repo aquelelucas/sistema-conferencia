@@ -1,81 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Sistema de Conferência</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- LOGIN -->
-    <div id="telaLogin" class="container">
+
+    <!-- ==================================================
+         LOGIN
+    =================================================== -->
+
+    <div
+        id="telaLogin"
+        class="container"
+    >
 
         <div class="card">
 
             <h1>Sistema de Conferência</h1>
-            <p class="subtitulo">Acesso do conferente</p>
+
+            <p class="subtitulo">
+                Acesso do conferente
+            </p>
+
 
             <div class="campo">
-                <label for="conferente">Conferente</label>
+
+                <label for="conferente">
+                    Conferente
+                </label>
 
                 <select id="conferente">
-                    <option value="">Carregando conferentes...</option>
+
+                    <option value="">
+                        Carregando conferentes...
+                    </option>
+
                 </select>
+
             </div>
 
+
             <div class="campo">
-                <label for="senha">Senha</label>
+
+                <label for="senha">
+                    Senha
+                </label>
 
                 <input
                     type="password"
                     id="senha"
                     placeholder="Digite sua senha"
-                    autocomplete="current-password"
                 >
+
             </div>
 
-            <button id="btnEntrar" type="button">
+
+            <button
+                id="btnEntrar"
+                type="button"
+            >
                 Entrar
             </button>
 
-            <div id="statusLogin" class="status"></div>
+
+            <div
+                id="statusLogin"
+                class="status"
+            ></div>
 
         </div>
 
     </div>
 
 
-    <!-- SISTEMA -->
-    <div id="telaSistema" class="container" style="display: none;">
+
+    <!-- ==================================================
+         SISTEMA
+    =================================================== -->
+
+    <div
+        id="telaSistema"
+        class="container"
+        style="display: none;"
+    >
 
         <div class="card">
+
+
+            <!-- CABEÇALHO -->
 
             <div class="cabecalhoSistema">
 
                 <div>
-                    <h1>Conferência</h1>
+
+                    <h1>
+                        Conferência
+                    </h1>
 
                     <p>
                         Conferente:
-                        <strong id="nomeConferente"></strong>
+                        <strong
+                            id="nomeConferente"
+                        ></strong>
                     </p>
+
                 </div>
 
-                <button id="btnSair" type="button">
+
+                <button
+                    id="btnSair"
+                    type="button"
+                >
                     Sair
                 </button>
 
             </div>
 
 
-            <!-- PEDIDO -->
+
+            <!-- ==================================================
+                 PEDIDO
+            =================================================== -->
+
             <section>
 
-                <h2>Pedido</h2>
+                <h2>
+                    1. Pedido
+                </h2>
 
                 <div class="campo">
 
@@ -92,17 +161,93 @@
 
                 </div>
 
-                <button id="btnBuscarPedido" type="button">
+
+                <button
+                    id="btnBuscarPedido"
+                    type="button"
+                >
                     Buscar pedido
                 </button>
 
             </section>
 
 
-            <!-- ITENS -->
-            <section id="secaoItens" style="display: none;">
 
-                <h2>Itens da conferência</h2>
+            <!-- ==================================================
+                 RESULTADO
+            =================================================== -->
+
+            <section
+                id="secaoResultado"
+                style="display: none;"
+            >
+
+                <h2>
+                    2. A separação está correta?
+                </h2>
+
+
+                <p>
+                    Informe se encontrou algum erro na separação.
+                </p>
+
+
+                <div class="botoesResultado">
+
+                    <button
+                        id="btnSemErro"
+                        type="button"
+                    >
+                        ✓ Sim, está correta
+                    </button>
+
+
+                    <button
+                        id="btnComErro"
+                        type="button"
+                    >
+                        ✕ Não, encontrei um erro
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================================
+                 REGISTRO SEM ERRO
+            =================================================== -->
+
+            <section>
+
+                <button
+                    id="btnRegistrarSemErro"
+                    type="button"
+                    style="display: none;"
+                >
+                    Registrar separação correta
+                </button>
+
+            </section>
+
+
+
+            <!-- ==================================================
+                 ERRO
+            =================================================== -->
+
+            <section
+                id="secaoErro"
+                style="display: none;"
+            >
+
+                <h2>
+                    3. Dados do erro
+                </h2>
+
+
+                <!-- SKU -->
 
                 <div class="campo">
 
@@ -119,6 +264,8 @@
 
                 </div>
 
+
+                <!-- QUANTIDADE SOLICITADA -->
 
                 <div class="campo">
 
@@ -137,6 +284,8 @@
                 </div>
 
 
+                <!-- QUANTIDADE SEPARADA -->
+
                 <div class="campo">
 
                     <label for="qtdSeparada">
@@ -154,41 +303,22 @@
                 </div>
 
 
-                <button id="btnAdicionarItem" type="button">
-                    Adicionar item
+                <button
+                    id="btnAdicionarItem"
+                    type="button"
+                >
+                    Adicionar SKU
                 </button>
 
 
-                <div id="listaItens"></div>
+                <!-- LISTA DOS SKUS -->
 
-            </section>
-
-
-            <!-- RESULTADO -->
-            <section id="secaoResultado" style="display: none;">
-
-                <h2>Resultado da conferência</h2>
-
-                <div class="botoesResultado">
-
-                    <button id="btnSemErro" type="button">
-                        Conferência sem erro
-                    </button>
-
-                    <button id="btnComErro" type="button">
-                        Conferência com erro
-                    </button>
-
-                </div>
-
-            </section>
+                <div
+                    id="listaItens"
+                ></div>
 
 
-            <!-- ERRO -->
-            <section id="secaoErro" style="display: none;">
-
-                <h2>Dados do erro</h2>
-
+                <!-- TIPO DE ERRO -->
 
                 <div class="campo">
 
@@ -223,6 +353,8 @@
                 </div>
 
 
+                <!-- GRAVIDADE -->
+
                 <div class="campo">
 
                     <label for="gravidade">
@@ -252,6 +384,8 @@
                 </div>
 
 
+                <!-- AÇÃO -->
+
                 <div class="campo">
 
                     <label for="acaoTomada">
@@ -267,6 +401,8 @@
                 </div>
 
 
+                <!-- OBSERVAÇÃO -->
+
                 <div class="campo">
 
                     <label for="observacao">
@@ -275,43 +411,42 @@
 
                     <textarea
                         id="observacao"
-                        placeholder="Digite uma observação"
                         rows="4"
+                        placeholder="Digite uma observação"
                     ></textarea>
 
                 </div>
 
 
-                <button id="btnRegistrarComErro" type="button">
-                    Registrar conferência com erro
-                </button>
-
-            </section>
-
-
-            <!-- REGISTRO SEM ERRO -->
-            <section>
+                <!-- REGISTRAR ERRO -->
 
                 <button
-                    id="btnRegistrarSemErro"
+                    id="btnRegistrarComErro"
                     type="button"
-                    style="display: none;"
                 >
-                    Registrar conferência sem erro
+                    Registrar erro
                 </button>
 
             </section>
 
 
-            <!-- STATUS GERAL -->
-            <div id="statusSistema" class="status"></div>
+
+            <!-- STATUS -->
+
+            <div
+                id="statusSistema"
+                class="status"
+            ></div>
+
 
         </div>
 
     </div>
 
 
+
     <script src="script.js"></script>
 
 </body>
+
 </html>
