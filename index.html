@@ -1,217 +1,160 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Sistema de Conferência</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-
-    <!-- ========================================= -->
-    <!-- TELA DE LOGIN -->
-    <!-- ========================================= -->
-
-    <div
-        id="telaLogin"
-        class="container"
-    >
+    <!-- LOGIN -->
+    <div id="telaLogin" class="container">
 
         <div class="card">
 
             <h1>Sistema de Conferência</h1>
+            <p class="subtitulo">Acesso do conferente</p>
 
-            <p>
-                Acesso do conferente
-            </p>
+            <div class="campo">
+                <label for="conferente">Conferente</label>
 
+                <select id="conferente">
+                    <option value="">Carregando conferentes...</option>
+                </select>
+            </div>
 
-            <label for="conferente">
-                Conferente
-            </label>
+            <div class="campo">
+                <label for="senha">Senha</label>
 
-            <select id="conferente">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                >
+            </div>
 
-                <option value="">
-                    Carregando conferentes...
-                </option>
-
-            </select>
-
-
-            <label for="senha">
-                Senha
-            </label>
-
-            <input
-                type="password"
-                id="senha"
-                placeholder="Digite sua senha"
-            >
-
-
-            <button
-                id="btnEntrar"
-                type="button"
-            >
+            <button id="btnEntrar" type="button">
                 Entrar
             </button>
 
-
-            <div
-                id="statusLogin"
-                class="status"
-            ></div>
+            <div id="statusLogin" class="status"></div>
 
         </div>
 
     </div>
 
 
-
-    <!-- ========================================= -->
-    <!-- TELA DE CONFERÊNCIA -->
-    <!-- ========================================= -->
-
-    <div
-        id="telaConferencia"
-        class="container"
-        style="display: none;"
-    >
+    <!-- SISTEMA -->
+    <div id="telaSistema" class="container" style="display: none;">
 
         <div class="card">
 
-            <div class="topo">
+            <div class="cabecalhoSistema">
 
                 <div>
-
-                    <h1>
-                        Conferência
-                    </h1>
+                    <h1>Conferência</h1>
 
                     <p>
                         Conferente:
                         <strong id="nomeConferente"></strong>
                     </p>
-
                 </div>
 
-
-                <button
-                    id="btnSair"
-                    type="button"
-                >
+                <button id="btnSair" type="button">
                     Sair
                 </button>
 
             </div>
 
 
-
-            <!-- ================================= -->
             <!-- PEDIDO -->
-            <!-- ================================= -->
-
             <section>
 
-                <h2>
-                    Pedido
-                </h2>
+                <h2>Pedido</h2>
 
+                <div class="campo">
 
-                <label for="pedido">
-                    Número do pedido
-                </label>
-
-
-                <div class="linha">
+                    <label for="pedido">
+                        Número do pedido
+                    </label>
 
                     <input
                         type="text"
                         id="pedido"
                         placeholder="Digite ou escaneie o pedido"
+                        autocomplete="off"
                     >
-
-
-                    <button
-                        id="btnBuscarPedido"
-                        type="button"
-                    >
-                        Buscar pedido
-                    </button>
 
                 </div>
+
+                <button id="btnBuscarPedido" type="button">
+                    Buscar pedido
+                </button>
 
             </section>
 
 
-
-            <!-- ================================= -->
             <!-- ITENS -->
-            <!-- ================================= -->
+            <section id="secaoItens" style="display: none;">
 
-            <section
-                id="secaoItens"
-                style="display: none;"
-            >
+                <h2>Itens da conferência</h2>
 
-                <h2>
-                    Itens da conferência
-                </h2>
+                <div class="campo">
 
+                    <label for="sku">
+                        SKU / Produto
+                    </label>
 
-                <label for="sku">
-                    SKU / Produto
-                </label>
+                    <input
+                        type="text"
+                        id="sku"
+                        placeholder="Digite ou escaneie o SKU"
+                        autocomplete="off"
+                    >
 
-                <input
-                    type="text"
-                    id="sku"
-                    placeholder="Digite ou escaneie o SKU"
-                >
+                </div>
 
 
-                <label for="qtdSolicitada">
-                    Quantidade solicitada
-                </label>
+                <div class="campo">
 
-                <input
-                    type="number"
-                    id="qtdSolicitada"
-                    min="0"
-                >
+                    <label for="qtdSolicitada">
+                        Quantidade solicitada
+                    </label>
 
+                    <input
+                        type="number"
+                        id="qtdSolicitada"
+                        min="0"
+                        step="1"
+                        placeholder="Quantidade"
+                    >
 
-                <label for="qtdSeparada">
-                    Quantidade separada
-                </label>
-
-                <input
-                    type="number"
-                    id="qtdSeparada"
-                    min="0"
-                >
+                </div>
 
 
-                <button
-                    id="btnAdicionarItem"
-                    type="button"
-                >
+                <div class="campo">
+
+                    <label for="qtdSeparada">
+                        Quantidade separada
+                    </label>
+
+                    <input
+                        type="number"
+                        id="qtdSeparada"
+                        min="0"
+                        step="1"
+                        placeholder="Quantidade"
+                    >
+
+                </div>
+
+
+                <button id="btnAdicionarItem" type="button">
                     Adicionar item
                 </button>
 
@@ -221,162 +164,147 @@
             </section>
 
 
-
-            <!-- ================================= -->
             <!-- RESULTADO -->
-            <!-- ================================= -->
+            <section id="secaoResultado" style="display: none;">
 
-            <section
-                id="secaoResultado"
-                style="display: none;"
-            >
+                <h2>Resultado da conferência</h2>
 
-                <h2>
-                    Resultado
-                </h2>
+                <div class="botoesResultado">
 
+                    <button id="btnSemErro" type="button">
+                        Conferência sem erro
+                    </button>
 
-                <button
-                    id="btnSemErro"
-                    type="button"
-                >
-                    Conferência sem erro
-                </button>
+                    <button id="btnComErro" type="button">
+                        Conferência com erro
+                    </button>
 
-
-                <button
-                    id="btnComErro"
-                    type="button"
-                >
-                    Conferência com erro
-                </button>
+                </div>
 
             </section>
 
 
-
-            <!-- ================================= -->
             <!-- ERRO -->
-            <!-- ================================= -->
+            <section id="secaoErro" style="display: none;">
 
-            <section
-                id="secaoErro"
-                style="display: none;"
-            >
-
-                <h2>
-                    Dados do erro
-                </h2>
+                <h2>Dados do erro</h2>
 
 
-                <label for="tipoErro">
-                    Tipo de erro
-                </label>
+                <div class="campo">
 
-                <select id="tipoErro">
+                    <label for="tipoErro">
+                        Tipo de erro
+                    </label>
 
-                    <option value="">
-                        Selecione
-                    </option>
+                    <select id="tipoErro">
 
-                    <option value="Quantidade">
-                        Quantidade
-                    </option>
+                        <option value="">
+                            Selecione
+                        </option>
 
-                    <option value="Produto">
-                        Produto
-                    </option>
+                        <option value="Quantidade">
+                            Quantidade
+                        </option>
 
-                    <option value="SKU">
-                        SKU
-                    </option>
+                        <option value="Produto">
+                            Produto
+                        </option>
 
-                    <option value="Avaria">
-                        Avaria
-                    </option>
+                        <option value="SKU">
+                            SKU
+                        </option>
 
-                    <option value="Validade">
-                        Validade
-                    </option>
+                        <option value="Outro">
+                            Outro
+                        </option>
 
-                    <option value="Outro">
-                        Outro
-                    </option>
+                    </select>
 
-                </select>
+                </div>
 
 
-                <label for="gravidade">
-                    Gravidade
-                </label>
+                <div class="campo">
 
-                <select id="gravidade">
+                    <label for="gravidade">
+                        Gravidade
+                    </label>
 
-                    <option value="">
-                        Selecione
-                    </option>
+                    <select id="gravidade">
 
-                    <option value="Baixa">
-                        Baixa
-                    </option>
+                        <option value="">
+                            Selecione
+                        </option>
 
-                    <option value="Média">
-                        Média
-                    </option>
+                        <option value="Baixa">
+                            Baixa
+                        </option>
 
-                    <option value="Alta">
-                        Alta
-                    </option>
+                        <option value="Média">
+                            Média
+                        </option>
 
-                </select>
+                        <option value="Alta">
+                            Alta
+                        </option>
 
+                    </select>
 
-                <label for="acaoTomada">
-                    Ação tomada
-                </label>
-
-                <input
-                    type="text"
-                    id="acaoTomada"
-                    placeholder="Informe a ação tomada"
-                >
+                </div>
 
 
-                <label for="observacao">
-                    Observação
-                </label>
+                <div class="campo">
 
-                <textarea
-                    id="observacao"
-                    placeholder="Observações adicionais"
-                ></textarea>
+                    <label for="acaoTomada">
+                        Ação tomada
+                    </label>
 
+                    <input
+                        type="text"
+                        id="acaoTomada"
+                        placeholder="Informe a ação tomada"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="observacao">
+                        Observação
+                    </label>
+
+                    <textarea
+                        id="observacao"
+                        placeholder="Digite uma observação"
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+                <button id="btnRegistrarComErro" type="button">
+                    Registrar conferência com erro
+                </button>
 
             </section>
 
 
+            <!-- REGISTRO SEM ERRO -->
+            <section>
 
-            <!-- ================================= -->
-            <!-- BOTÕES DE REGISTRO -->
-            <!-- ================================= -->
+                <button
+                    id="btnRegistrarSemErro"
+                    type="button"
+                    style="display: none;"
+                >
+                    Registrar conferência sem erro
+                </button>
 
-            <button
-                id="btnRegistrarSemErro"
-                type="button"
-                style="display: none;"
-            >
-                Registrar conferência sem erro
-            </button>
+            </section>
 
 
-            <button
-                id="btnRegistrarComErro"
-                type="button"
-                style="display: none;"
-            >
-                Registrar conferência com erro
-            </button>
-
+            <!-- STATUS GERAL -->
+            <div id="statusSistema" class="status"></div>
 
         </div>
 
@@ -386,5 +314,4 @@
     <script src="script.js"></script>
 
 </body>
-
 </html>
