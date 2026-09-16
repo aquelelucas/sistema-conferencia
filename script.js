@@ -1,507 +1,118 @@
+// ======================================================
+// CONFIGURAÇÕES
+// ======================================================
+
 const URL_API =
     'https://script.google.com/macros/s/AKfycbyA7taRtIZmSugdvn3IUWs5Tm2rPDGUDkZxHZRz_qKFsRemGaoY_mNr_fcSXb8PTvap4Q/exec';
 
-
-const CHAVE_API =
-    'KING-CONFERENCIA-2026';
-
-
-const CHAVE_SESSAO =
-    'king_conferencia_sessao';
+const CHAVE_API = 'KING-CONFERENCIA-2026';
+const CHAVE_SESSAO = 'king_conferencia_sessao';
 
 
-let itens = [];
+// ======================================================
+// VARIÁVEIS
+// ======================================================
+
+let sessao = null;
+let pedidoAtual = null;
+let erroSelecionado = false;
 
 
-// =====================================================
+// ======================================================
 // ELEMENTOS
-// =====================================================
+// ======================================================
 
-const conferente =
-    document.getElementById(
-        'conferente'
-    );
+const telaLogin = document.getElementById('telaLogin');
+const telaSistema = document.getElementById('telaSistema');
 
-
-const senha =
-    document.getElementById(
-        'senha'
-    );
-
-
-const btnEntrar =
-    document.getElementById(
-        'btnEntrar'
-    );
-
-
-const statusLogin =
-    document.getElementById(
-        'statusLogin'
-    );
-
+const conferente = document.getElementById('conferente');
+const senha = document.getElementById('senha');
+const btnEntrar = document.getElementById('btnEntrar');
+const statusLogin = document.getElementById('statusLogin');
 
 const nomeConferente =
-    document.getElementById(
-        'nomeConferente'
-    );
-
+    document.getElementById('nomeConferente');
 
 const btnSair =
-    document.getElementById(
-        'btnSair'
-    );
-
+    document.getElementById('btnSair');
 
 const pedido =
-    document.getElementById(
-        'pedido'
-    );
-
+    document.getElementById('pedido');
 
 const btnBuscarPedido =
-    document.getElementById(
-        'btnBuscarPedido'
-    );
-
-
-const secaoItens =
-    document.getElementById(
-        'secaoItens'
-    );
-
-
-const sku =
-    document.getElementById(
-        'sku'
-    );
-
-
-const qtdSolicitada =
-    document.getElementById(
-        'qtdSolicitada'
-    );
-
-
-const qtdSeparada =
-    document.getElementById(
-        'qtdSeparada'
-    );
-
-
-const btnAdicionarItem =
-    document.getElementById(
-        'btnAdicionarItem'
-    );
-
-
-const listaItens =
-    document.getElementById(
-        'listaItens'
-    );
-
+    document.getElementById('btnBuscarPedido');
 
 const secaoResultado =
-    document.getElementById(
-        'secaoResultado'
-    );
-
+    document.getElementById('secaoResultado');
 
 const btnSemErro =
-    document.getElementById(
-        'btnSemErro'
-    );
-
+    document.getElementById('btnSemErro');
 
 const btnComErro =
-    document.getElementById(
-        'btnComErro'
-    );
-
+    document.getElementById('btnComErro');
 
 const secaoErro =
-    document.getElementById(
-        'secaoErro'
-    );
+    document.getElementById('secaoErro');
 
+const sku =
+    document.getElementById('sku');
+
+const qtdSolicitada =
+    document.getElementById('qtdSolicitada');
+
+const qtdSeparada =
+    document.getElementById('qtdSeparada');
+
+const btnAdicionarItem =
+    document.getElementById('btnAdicionarItem');
+
+const listaItens =
+    document.getElementById('listaItens');
 
 const tipoErro =
-    document.getElementById(
-        'tipoErro'
-    );
-
+    document.getElementById('tipoErro');
 
 const gravidade =
-    document.getElementById(
-        'gravidade'
-    );
-
+    document.getElementById('gravidade');
 
 const acaoTomada =
-    document.getElementById(
-        'acaoTomada'
-    );
-
+    document.getElementById('acaoTomada');
 
 const observacao =
-    document.getElementById(
-        'observacao'
-    );
-
+    document.getElementById('observacao');
 
 const btnRegistrarSemErro =
-    document.getElementById(
-        'btnRegistrarSemErro'
-    );
-
+    document.getElementById('btnRegistrarSemErro');
 
 const btnRegistrarComErro =
-    document.getElementById(
-        'btnRegistrarComErro'
-    );
+    document.getElementById('btnRegistrarComErro');
 
+const statusSistema =
+    document.getElementById('statusSistema');
 
-// =====================================================
-// CHAMAR API
-// =====================================================
 
-async function chamarAPI(
-    acao,
-    dados = {}
-) {
+// ======================================================
+// INICIALIZAÇÃO
+// ======================================================
 
-    const resposta =
-        await fetch(
-            URL_API,
-            {
-                method: 'POST',
+document.addEventListener('DOMContentLoaded', () => {
 
-                headers: {
-                    'Content-Type':
-                        'text/plain;charset=utf-8'
-                },
+    esconderTudo();
 
-                body:
-                    JSON.stringify({
+    carregarConferentes();
 
-                        acao:
-                            acao,
+    const sessaoSalva =
+        sessionStorage.getItem(CHAVE_SESSAO);
 
-                        chave:
-                            CHAVE_API,
-
-                        ...dados
-
-                    })
-            }
-        );
-
-
-    if (!resposta.ok) {
-
-        throw new Error(
-            'Erro HTTP ' +
-            resposta.status
-        );
-
-    }
-
-
-    return await resposta.json();
-
-}
-
-
-// =====================================================
-// CARREGAR CONFERENTES
-// =====================================================
-
-async function carregarConferentes() {
-
-    conferente.innerHTML =
-        '<option value="">Carregando conferentes...</option>';
-
-
-    try {
-
-        const resultado =
-            await chamarAPI(
-                'listarConferentes'
-            );
-
-
-        if (!resultado.sucesso) {
-
-            conferente.innerHTML =
-                '<option value="">Erro ao carregar</option>';
-
-
-            statusLogin.textContent =
-                resultado.mensagem;
-
-
-            return;
-
-        }
-
-
-        conferente.innerHTML =
-            '<option value="">Selecione seu nome...</option>';
-
-
-        if (
-            !resultado.conferentes ||
-            resultado.conferentes.length === 0
-        ) {
-
-            conferente.innerHTML =
-                '<option value="">Nenhum conferente cadastrado</option>';
-
-
-            statusLogin.textContent =
-                'Nenhum conferente foi cadastrado ainda.';
-
-
-            return;
-
-        }
-
-
-        resultado.conferentes.forEach(
-            function(nome) {
-
-                const opcao =
-                    document.createElement(
-                        'option'
-                    );
-
-
-                opcao.value =
-                    nome;
-
-
-                opcao.textContent =
-                    nome;
-
-
-                conferente.appendChild(
-                    opcao
-                );
-
-            }
-        );
-
-
-    } catch (erro) {
-
-        console.error(
-            erro
-        );
-
-
-        conferente.innerHTML =
-            '<option value="">Erro ao carregar conferentes</option>';
-
-
-        statusLogin.textContent =
-            'Não foi possível carregar os conferentes.';
-
-    }
-
-}
-
-
-// =====================================================
-// LOGIN
-// =====================================================
-
-btnEntrar.addEventListener(
-    'click',
-    async function() {
-
-        const nome =
-            conferente.value;
-
-
-        const senhaInformada =
-            senha.value.trim();
-
-
-        if (!nome) {
-
-            statusLogin.textContent =
-                'Selecione o seu nome.';
-
-            return;
-
-        }
-
-
-        if (!senhaInformada) {
-
-            statusLogin.textContent =
-                'Digite sua senha.';
-
-            return;
-
-        }
-
-
-        btnEntrar.disabled =
-            true;
-
-
-        statusLogin.textContent =
-            'Entrando...';
-
+    if (sessaoSalva) {
 
         try {
 
-            const resultado =
-                await chamarAPI(
-                    'login',
-                    {
-                        conferente:
-                            nome,
+            sessao = JSON.parse(sessaoSalva);
 
-                        senha:
-                            senhaInformada
-                    }
-                );
-
-
-            if (!resultado.sucesso) {
-
-                statusLogin.textContent =
-                    resultado.mensagem;
-
-                return;
-
-            }
-
-
-            sessionStorage.setItem(
-                CHAVE_SESSAO,
-
-                JSON.stringify({
-
-                    token:
-                        resultado.token,
-
-                    conferente:
-                        resultado.conferente
-
-                })
-            );
-
-
-            mostrarSistema(
-                resultado.conferente
-            );
-
+            validarSessao();
 
         } catch (erro) {
-
-            console.error(
-                erro
-            );
-
-
-            statusLogin.textContent =
-                'Erro ao conectar com o sistema.';
-
-
-        } finally {
-
-            btnEntrar.disabled =
-                false;
-
-        }
-
-    }
-);
-
-
-// =====================================================
-// OBTER SESSÃO
-// =====================================================
-
-function obterSessao() {
-
-    const sessaoSalva =
-        sessionStorage.getItem(
-            CHAVE_SESSAO
-        );
-
-
-    if (!sessaoSalva) {
-
-        return null;
-
-    }
-
-
-    try {
-
-        return JSON.parse(
-            sessaoSalva
-        );
-
-
-    } catch (erro) {
-
-        sessionStorage.removeItem(
-            CHAVE_SESSAO
-        );
-
-
-        return null;
-
-    }
-
-}
-
-
-// =====================================================
-// VERIFICAR SESSÃO
-// =====================================================
-
-async function verificarSessao() {
-
-    const sessao =
-        obterSessao();
-
-
-    if (
-        !sessao ||
-        !sessao.token
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const resultado =
-            await chamarAPI(
-                'validarSessao',
-                {
-                    token:
-                        sessao.token
-                }
-            );
-
-
-        if (resultado.sucesso) {
-
-            mostrarSistema(
-                resultado.conferente
-            );
-
-
-        } else {
 
             sessionStorage.removeItem(
                 CHAVE_SESSAO
@@ -509,560 +120,928 @@ async function verificarSessao() {
 
         }
 
+    }
+
+});
+
+
+// ======================================================
+// ESCONDER SEÇÕES
+// ======================================================
+
+function esconderTudo() {
+
+    if (secaoResultado) {
+        secaoResultado.style.display = 'none';
+    }
+
+    if (secaoErro) {
+        secaoErro.style.display = 'none';
+    }
+
+    if (btnRegistrarSemErro) {
+        btnRegistrarSemErro.style.display = 'none';
+    }
+
+}
+
+
+// ======================================================
+// API
+// ======================================================
+
+async function chamarAPI(acao, dados = {}) {
+
+    const resposta = await fetch(URL_API, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type':
+                'text/plain;charset=utf-8'
+        },
+
+        body: JSON.stringify({
+
+            chave: CHAVE_API,
+
+            acao: acao,
+
+            dados: dados
+
+        })
+
+    });
+
+    const texto = await resposta.text();
+
+    let resultado;
+
+    try {
+
+        resultado = JSON.parse(texto);
 
     } catch (erro) {
 
         console.error(
-            erro
+            'Resposta da API:',
+            texto
+        );
+
+        throw new Error(
+            'A API retornou uma resposta inválida.'
         );
 
     }
 
-}
-
-
-// =====================================================
-// MOSTRAR SISTEMA
-// =====================================================
-
-function mostrarSistema(nome) {
-
-    document.getElementById(
-        'telaLogin'
-    ).style.display =
-        'none';
-
-
-    document.getElementById(
-        'telaConferencia'
-    ).style.display =
-        'block';
-
-
-    nomeConferente.textContent =
-        nome;
+    return resultado;
 
 }
 
 
-// =====================================================
-// SAIR
-// =====================================================
+// ======================================================
+// CARREGAR CONFERENTES
+// ======================================================
 
-btnSair.addEventListener(
-    'click',
-    function() {
+async function carregarConferentes() {
 
-        sessionStorage.removeItem(
-            CHAVE_SESSAO
-        );
+    try {
 
+        conferente.innerHTML =
+            '<option value="">Carregando conferentes...</option>';
 
-        location.reload();
-
-    }
-);
-
-
-// =====================================================
-// BUSCAR PEDIDO
-// =====================================================
-
-btnBuscarPedido.addEventListener(
-    'click',
-    async function() {
-
-        const sessao =
-            obterSessao();
-
-
-        if (!sessao) {
-
-            alert(
-                'Sessão expirada.'
+        const resultado =
+            await chamarAPI(
+                'listarConferentes'
             );
+
+        if (!resultado.sucesso) {
+
+            conferente.innerHTML =
+                '<option value="">Nenhum conferente disponível</option>';
+
+            statusLogin.textContent =
+                resultado.mensagem || '';
 
             return;
 
         }
 
+        const lista =
+            resultado.conferentes || [];
 
-        const numeroPedido =
-            pedido.value.trim();
+        conferente.innerHTML =
+            '<option value="">Selecione seu nome</option>';
 
+        lista.forEach(nome => {
 
-        if (!numeroPedido) {
+            const option =
+                document.createElement('option');
 
-            alert(
-                'Informe o número do pedido.'
-            );
+            option.value = nome;
 
-            return;
+            option.textContent = nome;
 
-        }
-
-
-        btnBuscarPedido.disabled =
-            true;
-
-
-        try {
-
-            const resultado =
-                await chamarAPI(
-                    'pedido',
-                    {
-
-                        token:
-                            sessao.token,
-
-                        pedido:
-                            numeroPedido
-
-                    }
-                );
-
-
-            if (!resultado.sucesso) {
-
-                alert(
-                    resultado.mensagem
-                );
-
-                return;
-
-            }
-
-
-            itens = [];
-
-
-            atualizarListaItens();
-
-
-            secaoItens.style.display =
-                'block';
-
-
-            secaoResultado.style.display =
-                'none';
-
-
-            secaoErro.style.display =
-                'none';
-
-
-        } catch (erro) {
-
-            console.error(
-                erro
-            );
-
-
-            alert(
-                'Erro ao consultar o pedido.'
-            );
-
-
-        } finally {
-
-            btnBuscarPedido.disabled =
-                false;
-
-        }
-
-    }
-);
-
-
-// =====================================================
-// ADICIONAR ITEM
-// =====================================================
-
-btnAdicionarItem.addEventListener(
-    'click',
-    function() {
-
-        const codigo =
-            sku.value.trim();
-
-
-        const solicitada =
-            qtdSolicitada.value;
-
-
-        const separada =
-            qtdSeparada.value;
-
-
-        if (!codigo) {
-
-            alert(
-                'Informe o SKU/produto.'
-            );
-
-            return;
-
-        }
-
-
-        if (
-            solicitada === '' ||
-            separada === ''
-        ) {
-
-            alert(
-                'Informe as quantidades.'
-            );
-
-            return;
-
-        }
-
-
-        itens.push({
-
-            sku:
-                codigo,
-
-            qtdSolicitada:
-                Number(
-                    solicitada
-                ),
-
-            qtdSeparada:
-                Number(
-                    separada
-                )
+            conferente.appendChild(option);
 
         });
 
+    } catch (erro) {
 
-        sku.value =
-            '';
+        console.error(erro);
+
+        conferente.innerHTML =
+            '<option value="">Erro ao carregar</option>';
+
+        statusLogin.textContent =
+            erro.message;
+
+    }
+
+}
 
 
-        qtdSolicitada.value =
-            '';
+// ======================================================
+// LOGIN
+// ======================================================
+
+btnEntrar.addEventListener(
+    'click',
+    fazerLogin
+);
 
 
-        qtdSeparada.value =
-            '';
+senha.addEventListener(
+    'keydown',
+    event => {
+
+        if (event.key === 'Enter') {
+
+            fazerLogin();
+
+        }
+
+    }
+);
 
 
-        sku.focus();
+async function fazerLogin() {
+
+    const nome =
+        conferente.value;
+
+    const senhaDigitada =
+        senha.value;
+
+    if (!nome) {
+
+        statusLogin.textContent =
+            'Selecione seu nome.';
+
+        conferente.focus();
+
+        return;
+
+    }
+
+    if (!senhaDigitada) {
+
+        statusLogin.textContent =
+            'Digite sua senha.';
+
+        senha.focus();
+
+        return;
+
+    }
+
+    btnEntrar.disabled = true;
+
+    statusLogin.textContent =
+        'Entrando...';
+
+    try {
+
+        const resultado =
+            await chamarAPI(
+                'login',
+                {
+                    conferente: nome,
+                    senha: senhaDigitada
+                }
+            );
+
+        if (!resultado.sucesso) {
+
+            statusLogin.textContent =
+                resultado.mensagem ||
+                'Usuário ou senha inválidos.';
+
+            btnEntrar.disabled = false;
+
+            return;
+
+        }
+
+        sessao =
+            resultado.sessao;
+
+        sessionStorage.setItem(
+            CHAVE_SESSAO,
+            JSON.stringify(sessao)
+        );
+
+        senha.value = '';
+
+        mostrarSistema();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        statusLogin.textContent =
+            erro.message;
+
+    }
+
+    btnEntrar.disabled = false;
+
+}
 
 
-        atualizarListaItens();
+// ======================================================
+// VALIDAR SESSÃO
+// ======================================================
 
+async function validarSessao() {
+
+    try {
+
+        const resultado =
+            await chamarAPI(
+                'validarSessao',
+                {
+                    token: sessao.token
+                }
+            );
+
+        if (!resultado.sucesso) {
+
+            encerrarSessao();
+
+            return;
+
+        }
+
+        mostrarSistema();
+
+    } catch (erro) {
+
+        encerrarSessao();
+
+    }
+
+}
+
+
+// ======================================================
+// MOSTRAR SISTEMA
+// ======================================================
+
+function mostrarSistema() {
+
+    telaLogin.style.display =
+        'none';
+
+    telaSistema.style.display =
+        'block';
+
+    nomeConferente.textContent =
+        sessao.conferente;
+
+    limparTelaConferencia();
+
+    pedido.focus();
+
+}
+
+
+// ======================================================
+// SAIR
+// ======================================================
+
+btnSair.addEventListener(
+    'click',
+    encerrarSessao
+);
+
+
+function encerrarSessao() {
+
+    sessao = null;
+
+    sessionStorage.removeItem(
+        CHAVE_SESSAO
+    );
+
+    telaSistema.style.display =
+        'none';
+
+    telaLogin.style.display =
+        'block';
+
+    senha.value = '';
+
+    statusLogin.textContent = '';
+
+    limparTelaConferencia();
+
+}
+
+
+// ======================================================
+// BUSCAR PEDIDO
+// ======================================================
+
+btnBuscarPedido.addEventListener(
+    'click',
+    buscarPedido
+);
+
+
+pedido.addEventListener(
+    'keydown',
+    event => {
+
+        if (event.key === 'Enter') {
+
+            buscarPedido();
+
+        }
+
+    }
+);
+
+
+async function buscarPedido() {
+
+    const numero =
+        pedido.value.trim();
+
+    if (!numero) {
+
+        mostrarStatus(
+            'Digite ou escaneie o número do pedido.'
+        );
+
+        pedido.focus();
+
+        return;
+
+    }
+
+    btnBuscarPedido.disabled = true;
+
+    mostrarStatus(
+        'Buscando pedido...'
+    );
+
+    try {
+
+        const resultado =
+            await chamarAPI(
+                'pedido',
+                {
+                    token: sessao.token,
+                    pedido: numero
+                }
+            );
+
+        if (!resultado.sucesso) {
+
+            mostrarStatus(
+                resultado.mensagem ||
+                'Pedido não encontrado.'
+            );
+
+            btnBuscarPedido.disabled = false;
+
+            return;
+
+        }
+
+        pedidoAtual =
+            resultado.pedido;
+
+        erroSelecionado = false;
+
+        esconderTudo();
+
+        /*
+         * IMPORTANTE:
+         *
+         * Depois de encontrar o pedido,
+         * NÃO abrimos SKU.
+         *
+         * Primeiro perguntamos se
+         * a separação está correta.
+         */
 
         secaoResultado.style.display =
             'block';
 
+        mostrarStatus(
+            'Pedido encontrado. Informe o resultado da conferência.'
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        mostrarStatus(
+            erro.message
+        );
+
+    }
+
+    btnBuscarPedido.disabled = false;
+
+}
+
+
+// ======================================================
+// SEPARAÇÃO SEM ERRO
+// ======================================================
+
+btnSemErro.addEventListener(
+    'click',
+    selecionarSemErro
+);
+
+
+function selecionarSemErro() {
+
+    if (!pedidoAtual) {
+
+        mostrarStatus(
+            'Nenhum pedido foi carregado.'
+        );
+
+        return;
+
+    }
+
+    erroSelecionado = false;
+
+    secaoErro.style.display =
+        'none';
+
+    btnRegistrarSemErro.style.display =
+        'block';
+
+    mostrarStatus(
+        'A separação está correta. Clique em registrar.'
+    );
+
+}
+
+
+// ======================================================
+// SEPARAÇÃO COM ERRO
+// ======================================================
+
+btnComErro.addEventListener(
+    'click',
+    selecionarComErro
+);
+
+
+function selecionarComErro() {
+
+    if (!pedidoAtual) {
+
+        mostrarStatus(
+            'Nenhum pedido foi carregado.'
+        );
+
+        return;
+
+    }
+
+    erroSelecionado = true;
+
+    /*
+     * Agora sim aparece o formulário
+     * do SKU com problema.
+     */
+
+    secaoErro.style.display =
+        'block';
+
+    btnRegistrarSemErro.style.display =
+        'none';
+
+    mostrarStatus(
+        'Informe o item que apresentou o erro.'
+    );
+
+    sku.focus();
+
+}
+
+
+// ======================================================
+// ADICIONAR SKU COM ERRO
+// ======================================================
+
+btnAdicionarItem.addEventListener(
+    'click',
+    adicionarItem
+);
+
+
+sku.addEventListener(
+    'keydown',
+    event => {
+
+        if (event.key === 'Enter') {
+
+            event.preventDefault();
+
+            qtdSolicitada.focus();
+
+        }
+
     }
 );
 
 
-// =====================================================
-// ATUALIZAR LISTA
-// =====================================================
+qtdSolicitada.addEventListener(
+    'keydown',
+    event => {
 
-function atualizarListaItens() {
+        if (event.key === 'Enter') {
 
-    listaItens.innerHTML =
-        '';
+            event.preventDefault();
 
+            qtdSeparada.focus();
+
+        }
+
+    }
+);
+
+
+qtdSeparada.addEventListener(
+    'keydown',
+    event => {
+
+        if (event.key === 'Enter') {
+
+            event.preventDefault();
+
+            adicionarItem();
+
+        }
+
+    }
+);
+
+
+function adicionarItem() {
+
+    if (!erroSelecionado) {
+
+        mostrarStatus(
+            'Primeiro informe que a separação possui erro.'
+        );
+
+        return;
+
+    }
+
+    const skuValor =
+        sku.value.trim();
+
+    const solicitada =
+        Number(qtdSolicitada.value);
+
+    const separada =
+        Number(qtdSeparada.value);
+
+    if (!skuValor) {
+
+        mostrarStatus(
+            'Informe o SKU ou produto.'
+        );
+
+        sku.focus();
+
+        return;
+
+    }
+
+    if (
+        qtdSolicitada.value === '' ||
+        isNaN(solicitada) ||
+        solicitada < 0
+    ) {
+
+        mostrarStatus(
+            'Informe a quantidade solicitada.'
+        );
+
+        qtdSolicitada.focus();
+
+        return;
+
+    }
+
+    if (
+        qtdSeparada.value === '' ||
+        isNaN(separada) ||
+        separada < 0
+    ) {
+
+        mostrarStatus(
+            'Informe a quantidade separada.'
+        );
+
+        qtdSeparada.focus();
+
+        return;
+
+    }
+
+    /*
+     * O item é armazenado temporariamente
+     * para ser enviado junto com o registro.
+     */
+
+    const item = {
+
+        sku: skuValor,
+
+        qtdSolicitada: solicitada,
+
+        qtdSeparada: separada
+
+    };
+
+    /*
+     * Guardamos os itens em uma propriedade
+     * do pedido atual.
+     */
+
+    if (!pedidoAtual.itens) {
+
+        pedidoAtual.itens = [];
+
+    }
+
+    pedidoAtual.itens.push(item);
+
+    renderizarItens();
+
+    sku.value = '';
+
+    qtdSolicitada.value = '';
+
+    qtdSeparada.value = '';
+
+    sku.focus();
+
+    mostrarStatus(
+        'Item adicionado. Você pode adicionar outro SKU.'
+    );
+
+}
+
+
+// ======================================================
+// MOSTRAR ITENS
+// ======================================================
+
+function renderizarItens() {
+
+    listaItens.innerHTML = '';
+
+    const itens =
+        pedidoAtual.itens || [];
 
     itens.forEach(
-        function(item, indice) {
+        (item, index) => {
 
             const div =
-                document.createElement(
-                    'div'
-                );
-
+                document.createElement('div');
 
             div.className =
                 'item-conferencia';
 
-
             div.innerHTML = `
 
-                <strong>
-                    ${item.sku}
-                </strong>
+                <div>
+                    <strong>
+                        ${escapeHTML(item.sku)}
+                    </strong>
+                </div>
 
-                <span>
+                <div>
                     Solicitada:
-                    ${item.qtdSolicitada}
+                    <strong>
+                        ${item.qtdSolicitada}
+                    </strong>
+                </div>
 
-                    |
-
+                <div>
                     Separada:
-                    ${item.qtdSeparada}
-                </span>
+                    <strong>
+                        ${item.qtdSeparada}
+                    </strong>
+                </div>
 
                 <button
                     type="button"
-                    onclick="removerItem(${indice})"
+                    class="btn-remover-item"
+                    data-index="${index}"
                 >
                     Remover
                 </button>
 
             `;
 
-
-            listaItens.appendChild(
-                div
-            );
+            listaItens.appendChild(div);
 
         }
     );
 
+    document
+        .querySelectorAll('.btn-remover-item')
+        .forEach(botao => {
+
+            botao.addEventListener(
+                'click',
+                () => {
+
+                    const index =
+                        Number(
+                            botao.dataset.index
+                        );
+
+                    pedidoAtual.itens.splice(
+                        index,
+                        1
+                    );
+
+                    renderizarItens();
+
+                }
+            );
+
+        });
+
 }
 
 
-// =====================================================
-// REMOVER ITEM
-// =====================================================
-
-function removerItem(indice) {
-
-    itens.splice(
-        indice,
-        1
-    );
-
-
-    atualizarListaItens();
-
-}
-
-
-// =====================================================
-// SEM ERRO
-// =====================================================
-
-btnSemErro.addEventListener(
-    'click',
-    function() {
-
-        if (itens.length === 0) {
-
-            alert(
-                'Adicione pelo menos um SKU.'
-            );
-
-            return;
-
-        }
-
-
-        secaoErro.style.display =
-            'none';
-
-
-        btnRegistrarSemErro.style.display =
-            'block';
-
-
-        btnRegistrarComErro.style.display =
-            'none';
-
-    }
-);
-
-
-// =====================================================
-// COM ERRO
-// =====================================================
-
-btnComErro.addEventListener(
-    'click',
-    function() {
-
-        if (itens.length === 0) {
-
-            alert(
-                'Adicione pelo menos um SKU.'
-            );
-
-            return;
-
-        }
-
-
-        secaoErro.style.display =
-            'block';
-
-
-        btnRegistrarSemErro.style.display =
-            'none';
-
-
-        btnRegistrarComErro.style.display =
-            'block';
-
-    }
-);
-
-
-// =====================================================
+// ======================================================
 // REGISTRAR SEM ERRO
-// =====================================================
+// ======================================================
 
 btnRegistrarSemErro.addEventListener(
     'click',
-    function() {
+    async () => {
 
-        registrarConferencia(
-            false
-        );
+        await registrarConferencia({
+
+            erro: false,
+
+            itens: [],
+
+            tipoErro: '',
+
+            gravidade: '',
+
+            acaoTomada: '',
+
+            observacao: ''
+
+        });
 
     }
 );
 
 
-// =====================================================
+// ======================================================
 // REGISTRAR COM ERRO
-// =====================================================
+// ======================================================
 
 btnRegistrarComErro.addEventListener(
     'click',
-    function() {
+    async () => {
 
-        registrarConferencia(
-            true
-        );
+        const itens =
+            pedidoAtual &&
+            pedidoAtual.itens
+                ? pedidoAtual.itens
+                : [];
+
+        if (itens.length === 0) {
+
+            mostrarStatus(
+                'Adicione pelo menos um SKU com erro.'
+            );
+
+            sku.focus();
+
+            return;
+
+        }
+
+        if (!tipoErro.value) {
+
+            mostrarStatus(
+                'Selecione o tipo de erro.'
+            );
+
+            tipoErro.focus();
+
+            return;
+
+        }
+
+        if (!gravidade.value) {
+
+            mostrarStatus(
+                'Selecione a gravidade.'
+            );
+
+            gravidade.focus();
+
+            return;
+
+        }
+
+        if (!acaoTomada.value.trim()) {
+
+            mostrarStatus(
+                'Informe a ação tomada.'
+            );
+
+            acaoTomada.focus();
+
+            return;
+
+        }
+
+        await registrarConferencia({
+
+            erro: true,
+
+            itens: itens,
+
+            tipoErro:
+                tipoErro.value,
+
+            gravidade:
+                gravidade.value,
+
+            acaoTomada:
+                acaoTomada.value.trim(),
+
+            observacao:
+                observacao.value.trim()
+
+        });
 
     }
 );
 
 
-// =====================================================
-// REGISTRAR CONFERÊNCIA
-// =====================================================
+// ======================================================
+// ENVIAR PARA A API
+// ======================================================
 
-async function registrarConferencia(
-    comErro
-) {
+async function registrarConferencia(dados) {
 
-    const sessao =
-        obterSessao();
+    if (!pedidoAtual) {
 
-
-    if (!sessao) {
-
-        alert(
-            'Sessão expirada.'
+        mostrarStatus(
+            'Nenhum pedido selecionado.'
         );
 
         return;
 
     }
 
-
-    if (itens.length === 0) {
-
-        alert(
-            'Nenhum item foi adicionado.'
-        );
-
-        return;
-
-    }
-
-
-    if (comErro) {
-
-        if (!tipoErro.value) {
-
-            alert(
-                'Informe o tipo de erro.'
-            );
-
-            return;
-
-        }
-
-
-        if (!gravidade.value) {
-
-            alert(
-                'Informe a gravidade.'
-            );
-
-            return;
-
-        }
-
-
-        if (!acaoTomada.value.trim()) {
-
-            alert(
-                'Informe a ação tomada.'
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    const itensParaEnviar =
-        itens.map(
-            function(item) {
-
-                return {
-
-                    sku:
-                        item.sku,
-
-                    qtdSolicitada:
-                        item.qtdSolicitada,
-
-                    qtdSeparada:
-                        item.qtdSeparada,
-
-                    erro:
-                        comErro,
-
-                    tipoErro:
-                        comErro
-                            ? tipoErro.value
-                            : '',
-
-                    gravidade:
-                        comErro
-                            ? gravidade.value
-                            : '',
-
-                    acaoTomada:
-                        comErro
-                            ? acaoTomada.value.trim()
-                            : '',
-
-                    observacao:
-                        comErro
-                            ? observacao.value.trim()
-                            : ''
-
-                };
-
-            }
-        );
-
-
-    const botao =
-        comErro
-            ? btnRegistrarComErro
-            : btnRegistrarSemErro;
-
-
-    botao.disabled =
+    btnRegistrarSemErro.disabled =
         true;
 
+    btnRegistrarComErro.disabled =
+        true;
+
+    mostrarStatus(
+        'Registrando conferência...'
+    );
 
     try {
 
@@ -1075,125 +1054,137 @@ async function registrarConferencia(
                         sessao.token,
 
                     pedido:
-                        pedido.value.trim(),
+                        pedidoAtual.pedido,
 
                     itens:
-                        itensParaEnviar
+                        dados.itens,
+
+                    erro:
+                        dados.erro,
+
+                    tipoErro:
+                        dados.tipoErro,
+
+                    gravidade:
+                        dados.gravidade,
+
+                    acaoTomada:
+                        dados.acaoTomada,
+
+                    observacao:
+                        dados.observacao
 
                 }
             );
 
-
         if (!resultado.sucesso) {
 
-            alert(
-                resultado.mensagem
+            mostrarStatus(
+                resultado.mensagem ||
+                'Erro ao registrar.'
             );
+
+            btnRegistrarSemErro.disabled =
+                false;
+
+            btnRegistrarComErro.disabled =
+                false;
 
             return;
 
         }
 
-
-        alert(
+        mostrarStatus(
+            resultado.mensagem ||
             'Conferência registrada com sucesso!'
         );
 
-
-        limparConferencia();
-
+        limparTelaConferencia();
 
     } catch (erro) {
 
-        console.error(
-            erro
+        console.error(erro);
+
+        mostrarStatus(
+            erro.message
         );
-
-
-        alert(
-            'Erro ao registrar a conferência.'
-        );
-
-
-    } finally {
-
-        botao.disabled =
-            false;
 
     }
+
+    btnRegistrarSemErro.disabled =
+        false;
+
+    btnRegistrarComErro.disabled =
+        false;
 
 }
 
 
-// =====================================================
+// ======================================================
 // LIMPAR CONFERÊNCIA
-// =====================================================
+// ======================================================
 
-function limparConferencia() {
+function limparTelaConferencia() {
 
-    pedido.value =
-        '';
+    pedidoAtual = null;
 
+    erroSelecionado = false;
 
-    sku.value =
-        '';
+    pedido.value = '';
 
+    sku.value = '';
 
-    qtdSolicitada.value =
-        '';
+    qtdSolicitada.value = '';
 
+    qtdSeparada.value = '';
 
-    qtdSeparada.value =
-        '';
+    listaItens.innerHTML = '';
 
+    tipoErro.value = '';
 
-    itens = [];
+    gravidade.value = '';
 
+    acaoTomada.value = '';
 
-    atualizarListaItens();
+    observacao.value = '';
 
-
-    secaoItens.style.display =
-        'none';
-
-
-    secaoResultado.style.display =
-        'none';
-
-
-    secaoErro.style.display =
-        'none';
-
-
-    tipoErro.value =
-        '';
-
-
-    gravidade.value =
-        '';
-
-
-    acaoTomada.value =
-        '';
-
-
-    observacao.value =
-        '';
+    esconderTudo();
 
 }
 
 
-// =====================================================
-// INICIALIZAÇÃO
-// =====================================================
+// ======================================================
+// STATUS
+// ======================================================
 
-document.addEventListener(
-    'DOMContentLoaded',
-    function() {
+function mostrarStatus(mensagem) {
 
-        carregarConferentes();
+    if (statusSistema) {
 
-        verificarSessao();
+        statusSistema.textContent =
+            mensagem;
 
     }
-);
+
+}
+
+
+// ======================================================
+// PROTEÇÃO DE TEXTO
+// ======================================================
+
+function escapeHTML(valor) {
+
+    return String(valor)
+
+        .replace(/&/g, '&amp;')
+
+        .replace(/</g, '&lt;')
+
+        .replace(/>/g, '&gt;')
+
+        .replace(/"/g, '&quot;')
+
+        .replace(/'/g, '&#039;');
+
+}
