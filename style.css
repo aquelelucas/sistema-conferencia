@@ -1,0 +1,666 @@
+/* =====================================================
+   CONFIGURAÇÕES GERAIS
+   ===================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: #f2f4f7;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  color: #222;
+}
+
+
+/* =====================================================
+   CONTAINER
+   ===================================================== */
+
+.container {
+  width: 100%;
+  max-width: 520px;
+
+  margin: 0 auto;
+  padding: 20px 15px;
+}
+
+
+/* =====================================================
+   TELAS
+   ===================================================== */
+
+.tela {
+  width: 100%;
+}
+
+
+/* =====================================================
+   CARD PRINCIPAL
+   ===================================================== */
+
+.card {
+  width: 100%;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  box-shadow:
+    0 3px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.logo {
+  text-align: center;
+
+  font-size: 30px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  color: #111;
+}
+
+.logo.pequeno {
+  text-align: left;
+
+  font-size: 24px;
+}
+
+
+/* =====================================================
+   SUBTÍTULO
+   ===================================================== */
+
+.subtitulo {
+  margin-top: 4px;
+  margin-bottom: 22px;
+
+  text-align: center;
+
+  color: #666;
+
+  font-size: 15px;
+}
+
+.logo.pequeno + .subtitulo {
+  text-align: left;
+
+  margin-bottom: 0;
+}
+
+
+/* =====================================================
+   CAMPOS
+   ===================================================== */
+
+.campo {
+  width: 100%;
+
+  margin-bottom: 17px;
+}
+
+.campo label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #333;
+}
+
+
+/* =====================================================
+   INPUTS / SELECT / TEXTAREA
+   ===================================================== */
+
+input,
+select,
+textarea {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 1px solid #cfd4da;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #222;
+
+  font-family: inherit;
+
+  font-size: 17px;
+
+  outline: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #1976d2;
+
+  box-shadow:
+    0 0 0 3px rgba(25, 118, 210, 0.12);
+}
+
+textarea {
+  resize: vertical;
+
+  min-height: 100px;
+}
+
+
+/* =====================================================
+   BOTÕES
+   ===================================================== */
+
+.btn {
+  width: 100%;
+
+  padding: 15px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.05s ease;
+}
+
+.btn:active {
+  transform: scale(0.99);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   BOTÃO PRINCIPAL
+   ===================================================== */
+
+.btn-principal {
+  background: #1976d2;
+
+  color: #ffffff;
+}
+
+.btn-principal:hover {
+  background: #1565c0;
+}
+
+
+/* =====================================================
+   BOTÃO SECUNDÁRIO
+   ===================================================== */
+
+.btn-secundario {
+  background: #eceff1;
+
+  color: #263238;
+}
+
+.btn-secundario:hover {
+  background: #e0e4e7;
+}
+
+
+/* =====================================================
+   BOTÃO SAIR
+   ===================================================== */
+
+.btn-sair {
+  width: auto;
+
+  padding: 9px 14px;
+
+  background: #eceff1;
+
+  color: #424242;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   BOTÕES DE RESULTADO
+   ===================================================== */
+
+.btn-sucesso {
+  background: #2e7d32;
+
+  color: #ffffff;
+}
+
+.btn-sucesso:hover {
+  background: #256628;
+}
+
+
+.btn-erro {
+  background: #c62828;
+
+  color: #ffffff;
+}
+
+.btn-erro:hover {
+  background: #ad2020;
+}
+
+
+/* =====================================================
+   CABEÇALHO
+   ===================================================== */
+
+.cabecalho {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+
+/* =====================================================
+   USUÁRIO LOGADO
+   ===================================================== */
+
+.usuario-logado {
+  padding: 12px 14px;
+
+  margin-bottom: 20px;
+
+  border-radius: 10px;
+
+  background: #f1f8ff;
+
+  color: #555;
+
+  font-size: 14px;
+}
+
+.usuario-logado strong {
+  color: #1976d2;
+}
+
+
+/* =====================================================
+   SEÇÕES
+   ===================================================== */
+
+.secao {
+  margin-top: 20px;
+}
+
+.secao h2,
+.resultado h2,
+.erro-form h2 {
+  margin: 0 0 15px;
+
+  font-size: 20px;
+
+  color: #222;
+}
+
+
+/* =====================================================
+   LINHA DO PEDIDO
+   ===================================================== */
+
+.linha-pedido {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: stretch;
+}
+
+.linha-pedido input {
+  min-width: 0;
+}
+
+.linha-pedido .btn {
+  width: auto;
+
+  min-width: 105px;
+}
+
+
+/* =====================================================
+   LINHA DE CAMPOS
+   ===================================================== */
+
+.linha-campos {
+  display: flex;
+
+  gap: 12px;
+}
+
+.linha-campos .campo {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+/* =====================================================
+   FORMULÁRIO DO ITEM
+   ===================================================== */
+
+.item-form {
+  padding: 16px;
+
+  margin-bottom: 18px;
+
+  border-radius: 12px;
+
+  background: #f7f9fb;
+
+  border: 1px solid #e4e7eb;
+}
+
+
+/* =====================================================
+   LISTA DE ITENS
+   ===================================================== */
+
+.lista-itens {
+  width: 100%;
+
+  margin-top: 15px;
+}
+
+
+/* =====================================================
+   ITEM INDIVIDUAL
+   ===================================================== */
+
+.item {
+  position: relative;
+
+  padding: 14px;
+
+  margin-bottom: 10px;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe3e7;
+
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.item-cabecalho {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 8px;
+}
+
+.item-numero {
+  font-size: 13px;
+
+  color: #777;
+}
+
+.item-sku {
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: #1976d2;
+
+  word-break: break-word;
+}
+
+.item-dados {
+  display: flex;
+
+  gap: 20px;
+
+  font-size: 14px;
+
+  color: #555;
+}
+
+.item-dado strong {
+  color: #222;
+}
+
+
+/* =====================================================
+   BOTÃO REMOVER ITEM
+   ===================================================== */
+
+.btn-remover-item {
+  width: auto;
+
+  padding: 7px 10px;
+
+  border: 0;
+
+  border-radius: 7px;
+
+  background: #ffebee;
+
+  color: #c62828;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.btn-remover-item:hover {
+  background: #ffcdd2;
+}
+
+
+/* =====================================================
+   RESULTADO
+   ===================================================== */
+
+.resultado {
+  margin-top: 25px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #e0e0e0;
+}
+
+.pergunta {
+  margin: 0 0 15px;
+
+  color: #555;
+
+  font-size: 16px;
+}
+
+
+/* =====================================================
+   BOTÕES DE RESULTADO
+   ===================================================== */
+
+.botoes-resultado {
+  display: flex;
+
+  gap: 10px;
+}
+
+.botoes-resultado .btn {
+  flex: 1;
+}
+
+
+/* =====================================================
+   FORMULÁRIO DE ERRO
+   ===================================================== */
+
+.erro-form {
+  margin-top: 20px;
+
+  padding: 18px;
+
+  border-radius: 12px;
+
+  background: #fff8f8;
+
+  border: 1px solid #ffcdd2;
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.status {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  margin-top: 15px;
+
+  border-radius: 10px;
+
+  text-align: center;
+
+  font-size: 15px;
+
+  font-weight: 700;
+}
+
+.status.sucesso {
+  background: #e8f5e9;
+
+  color: #2e7d32;
+}
+
+.status.erro {
+  background: #ffebee;
+
+  color: #c62828;
+}
+
+.status.info {
+  background: #e3f2fd;
+
+  color: #1565c0;
+}
+
+
+/* =====================================================
+   OCULTAR
+   ===================================================== */
+
+.oculto {
+  display: none !important;
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+@media (max-width: 420px) {
+
+  .container {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .logo {
+    font-size: 27px;
+  }
+
+  .linha-pedido {
+    flex-direction: column;
+  }
+
+  .linha-pedido .btn {
+    width: 100%;
+  }
+
+  .linha-campos {
+    flex-direction: column;
+
+    gap: 0;
+  }
+
+  .botoes-resultado {
+    flex-direction: column;
+  }
+
+  .cabecalho {
+    align-items: flex-start;
+  }
+
+  .item-dados {
+    flex-direction: column;
+
+    gap: 5px;
+  }
+
+}
+
+
+/* =====================================================
+   TELAS MAIORES
+   ===================================================== */
+
+@media (min-width: 700px) {
+
+  .container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+}
