@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>King - Conferência</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+<body>
+
+  <main class="container">
+
+    <!-- ==========================================
+         LOGIN
+         ========================================== -->
+
+    <section
+      id="telaLogin"
+      class="tela"
+    >
+
+      <div class="card">
+
+        <div class="logo">
+          KING
+        </div>
+
+        <div class="subtitulo">
+          Sistema de Conferência
+        </div>
+
+        <div class="campo">
+
+          <label for="conferente">
+            Conferente
+          </label>
+
+          <input
+            type="text"
+            id="conferente"
+            placeholder="Digite seu nome"
+            autocomplete="username"
+          >
+
+        </div>
+
+        <div class="campo">
+
+          <label for="senha">
+            Senha
+          </label>
+
+          <input
+            type="password"
+            id="senha"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+          >
+
+        </div>
+
+        <button
+          id="btnEntrar"
+          class="btn btn-principal"
+          type="button"
+        >
+          ENTRAR
+        </button>
+
+        <div
+          id="statusLogin"
+          class="status oculto"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         CONFERÊNCIA
+         ========================================== -->
+
+    <section
+      id="telaConferencia"
+      class="tela oculto"
+    >
+
+      <div class="card">
+
+        <div class="cabecalho">
+
+          <div>
+
+            <div class="logo pequeno">
+              KING
+            </div>
+
+            <div class="subtitulo">
+              Conferência
+            </div>
+
+          </div>
+
+          <button
+            id="btnSair"
+            class="btn btn-sair"
+            type="button"
+          >
+            SAIR
+          </button>
+
+        </div>
+
+
+        <!-- CONFERENTE LOGADO -->
+
+        <div class="usuario-logado">
+
+          Conferente:
+
+          <strong id="nomeConferente">
+            -
+          </strong>
+
+        </div>
+
+
+        <!-- ======================================
+             PEDIDO
+             ====================================== -->
+
+        <div class="secao">
+
+          <h2>
+            Pedido
+          </h2>
+
+          <div class="linha-pedido">
+
+            <input
+              type="text"
+              id="pedido"
+              placeholder="Digite ou bipe o pedido"
+              inputmode="numeric"
+              autocomplete="off"
+            >
+
+            <button
+              id="btnBuscarPedido"
+              class="btn btn-principal"
+              type="button"
+            >
+              BUSCAR
+            </button>
+
+          </div>
+
+          <div
+            id="statusPedido"
+            class="status oculto"
+          ></div>
+
+        </div>
+
+
+        <!-- ======================================
+             ITENS DA CONFERÊNCIA
+             ====================================== -->
+
+        <div
+          id="secaoItens"
+          class="secao oculto"
+        >
+
+          <h2>
+            Itens da conferência
+          </h2>
+
+
+          <!-- FORMULÁRIO DO ITEM -->
+
+          <div class="item-form">
+
+            <div class="campo">
+
+              <label for="sku">
+                SKU / Produto
+              </label>
+
+              <input
+                type="text"
+                id="sku"
+                placeholder="Digite o SKU"
+                autocomplete="off"
+              >
+
+            </div>
+
+
+            <div class="linha-campos">
+
+              <div class="campo">
+
+                <label for="qtdSolicitada">
+                  Qtd. solicitada
+                </label>
+
+                <input
+                  type="number"
+                  id="qtdSolicitada"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                >
+
+              </div>
+
+
+              <div class="campo">
+
+                <label for="qtdSeparada">
+                  Qtd. separada
+                </label>
+
+                <input
+                  type="number"
+                  id="qtdSeparada"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                >
+
+              </div>
+
+            </div>
+
+
+            <button
+              id="btnAdicionarItem"
+              class="btn btn-secundario"
+              type="button"
+            >
+              + ADICIONAR ITEM
+            </button>
+
+          </div>
+
+
+          <!-- LISTA DE ITENS -->
+
+          <div
+            id="listaItens"
+            class="lista-itens"
+          >
+
+            <!--
+              Os itens serão adicionados
+              pelo JavaScript.
+            -->
+
+          </div>
+
+
+          <!-- ====================================
+               RESULTADO DA CONFERÊNCIA
+               ==================================== -->
+
+          <div
+            id="secaoResultado"
+            class="resultado oculto"
+          >
+
+            <h2>
+              Resultado da conferência
+            </h2>
+
+            <p class="pergunta">
+              Foi encontrado algum erro?
+            </p>
+
+
+            <div class="botoes-resultado">
+
+              <button
+                id="btnSemErro"
+                class="btn btn-sucesso"
+                type="button"
+              >
+                NÃO, ESTÁ CORRETO
+              </button>
+
+              <button
+                id="btnComErro"
+                class="btn btn-erro"
+                type="button"
+              >
+                SIM, HÁ ERRO
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- ====================================
+               DETALHES DO ERRO
+               ==================================== -->
+
+          <div
+            id="secaoErro"
+            class="erro-form oculto"
+          >
+
+            <h2>
+              Detalhes do erro
+            </h2>
+
+
+            <div class="campo">
+
+              <label for="tipoErro">
+                Tipo de erro
+              </label>
+
+              <select id="tipoErro">
+
+                <option value="">
+                  Selecione
+                </option>
+
+                <option value="Falta">
+                  Falta
+                </option>
+
+                <option value="Sobra">
+                  Sobra
+                </option>
+
+                <option value="Produto errado">
+                  Produto errado
+                </option>
+
+                <option value="Quantidade incorreta">
+                  Quantidade incorreta
+                </option>
+
+                <option value="Outro">
+                  Outro
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="gravidade">
+                Gravidade
+              </label>
+
+              <select id="gravidade">
+
+                <option value="">
+                  Selecione
+                </option>
+
+                <option value="Baixa">
+                  Baixa
+                </option>
+
+                <option value="Média">
+                  Média
+                </option>
+
+                <option value="Alta">
+                  Alta
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="acaoTomada">
+                Ação tomada
+              </label>
+
+              <select id="acaoTomada">
+
+                <option value="">
+                  Selecione
+                </option>
+
+                <option value="Correção na separação">
+                  Correção na separação
+                </option>
+
+                <option value="Produto substituído">
+                  Produto substituído
+                </option>
+
+                <option value="Separador informado">
+                  Separador informado
+                </option>
+
+                <option value="Outro">
+                  Outro
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="observacao">
+                Observação
+              </label>
+
+              <textarea
+                id="observacao"
+                rows="4"
+                placeholder="Descreva o ocorrido"
+              ></textarea>
+
+            </div>
+
+
+            <button
+              id="btnRegistrarComErro"
+              class="btn btn-erro"
+              type="button"
+            >
+              REGISTRAR CONFERÊNCIA
+            </button>
+
+          </div>
+
+
+          <!-- ====================================
+               REGISTRO SEM ERRO
+               ==================================== -->
+
+          <button
+            id="btnRegistrarSemErro"
+            class="btn btn-sucesso oculto"
+            type="button"
+          >
+            REGISTRAR CONFERÊNCIA
+          </button>
+
+        </div>
+
+
+        <!-- ======================================
+             STATUS GERAL
+             ====================================== -->
+
+        <div
+          id="statusGeral"
+          class="status oculto"
+        ></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ==========================================
+       JAVASCRIPT
+       ========================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
