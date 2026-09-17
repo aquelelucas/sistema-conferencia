@@ -1,32 +1,52 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxnoQ8Nm9-ZsyPk0n_QKb_PFbCiutRuuOm7lJaQv4Cix_BmLh2X5xdZU_-BstX8k_AWYA/exec';
+
 const CHAVE_API = 'KING-CONFERENCIA-2026';
 
 let sessao = '';
-let pedidoAtual = null;
+let nomeConferente = '';
 let itens = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    const btnEntrar = document.getElementById('btnEntrar');
-    const btnSair = document.getElementById('btnSair');
-    const btnBuscarPedido = document.getElementById('btnBuscarPedido');
-    const btnSemErro = document.getElementById('btnSemErro');
-    const btnComErro = document.getElementById('btnComErro');
-    const btnAdicionarItem = document.getElementById('btnAdicionarItem');
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const sessaoSalva = sessionStorage.getItem('sessaoConferencia');
+    const nomeSalvo = sessionStorage.getItem('nomeConferente');
+
+    if (sessaoSalva && nomeSalvo) {
+        sessao = sessaoSalva;
+        nomeConferente = nomeSalvo;
+
+        mostrarSistema(nomeConferente);
+    }
 
     carregarConferentes();
+
+    const btnEntrar = document.getElementById('btnEntrar');
+    const btnBuscarPedido = document.getElementById('btnBuscarPedido');
+    const btnSair = document.getElementById('btnSair');
+
+    const btnSemErro = document.getElementById('btnSemErro');
+    const btnComErro = document.getElementById('btnComErro');
+
+    const btnAdicionarItem = document.getElementById('btnAdicionarItem');
+
+    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
+    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
 
     if (btnEntrar) {
         btnEntrar.addEventListener('click', fazerLogin);
     }
 
-    if (btnSair) {
-        btnSair.addEventListener('click', sair);
-    }
-
     if (btnBuscarPedido) {
         btnBuscarPedido.addEventListener('click', buscarPedido);
+    }
+
+    if (btnSair) {
+        btnSair.addEventListener('click', sair);
     }
 
     if (btnSemErro) {
@@ -49,10 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnRegistrarComErro.addEventListener('click', registrarComErro);
     }
 
-    const pedidoInput = document.getElementById('pedido');
+    const campoPedido = document.getElementById('pedido');
 
-    if (pedidoInput) {
-        pedidoInput.addEventListener('keydown', (event) => {
+    if (campoPedido) {
+        campoPedido.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 buscarPedido();
@@ -60,171 +80,239 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const skuInput = document.getElementById('sku');
-
-    if (skuInput) {
-        skuInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-
-                const qtd = document.getElementById('qtdSolicitada');
-
-                if (qtd) {
-                    qtd.focus();
-                }
-            }
-        });
-    }
-
-    const qtdSeparada = document.getElementById('qtdSeparada');
-
-    if (qtdSeparada) {
-        qtdSeparada.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                adicionarItem();
-            }
-        });
-    }
 });
 
 
+// ============================================================
+// FUNÇÃO PRINCIPAL PARA CHAMAR A API
+// ============================================================
+
 async function chamarAPI(acao, dados = {}) {
-    const resposta = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-            chave: CHAVE_API,
-            acao: acao,
-            ...dados
-        })
+
+    const corpo = {
+        chave: CHAVE_API,
+        acao: acao,
+        ...dados
+    };
+
+    console.log('Enviando para API:', acao, {
+        ...corpo,
+        sessao: corpo.sessao ? '[SESSÃO PRESENTE]' : '[SEM SESSÃO]'
     });
 
-    if (!resposta.ok) {
-        throw new Error(`Erro HTTP ${resposta.status}`);
-    }
+    try {
 
-    return await resposta.json();
+        const resposta = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify(corpo)
+        });
+
+        console.log('Status da API:', resposta.status);
+
+        const texto = await resposta.text();
+
+        console.log('Resposta da API:', texto);
+
+        let resultado;
+
+        try {
+            resultado = JSON.parse(texto);
+        } catch (erroJSON) {
+
+            console.error('A API não retornou JSON válido:', texto);
+
+            return {
+                sucesso: false,
+                mensagem: 'A API retornou uma resposta inválida.'
+            };
+        }
+
+        return resultado;
+
+    } catch (erro) {
+
+        console.error('Erro ao chamar API:', erro);
+
+        return {
+            sucesso: false,
+            mensagem: 'Não foi possível conectar ao sistema.'
+        };
+    }
 }
 
 
+// ============================================================
+// CARREGAR CONFERENTES
+// ============================================================
+
 async function carregarConferentes() {
+
     const select = document.getElementById('conferente');
 
     if (!select) {
         return;
     }
 
-    select.innerHTML = '<option value="">Carregando conferentes...</option>';
-    select.disabled = true;
-
     try {
+
         const resultado = await chamarAPI('listarConferentes');
 
         if (!resultado.sucesso) {
-            throw new Error(resultado.mensagem || 'Não foi possível carregar os conferentes.');
-        }
 
-        select.innerHTML = '<option value="">Selecione seu nome</option>';
-
-        if (!resultado.conferentes || resultado.conferentes.length === 0) {
-            select.innerHTML = '<option value="">Nenhum conferente cadastrado</option>';
-            return;
-        }
-
-        resultado.conferentes.forEach(nome => {
-            const option = document.createElement('option');
-            option.value = nome;
-            option.textContent = nome;
-            select.appendChild(option);
-        });
-
-        select.disabled = false;
-
-    } catch (erro) {
-        console.error(erro);
-
-        select.innerHTML = '<option value="">Erro ao carregar conferentes</option>';
-
-        mostrarStatusLogin(
-            'Não foi possível carregar os conferentes.',
-            true
-        );
-    }
-}
-
-
-async function fazerLogin() {
-    const conferente = document.getElementById('conferente');
-    const senha = document.getElementById('senha');
-    const btnEntrar = document.getElementById('btnEntrar');
-
-    if (!conferente || !senha) {
-        return;
-    }
-
-    const nome = conferente.value.trim();
-    const senhaInformada = senha.value.trim();
-
-    if (!nome) {
-        mostrarStatusLogin('Selecione seu nome.', true);
-        conferente.focus();
-        return;
-    }
-
-    if (!senhaInformada) {
-        mostrarStatusLogin('Digite sua senha.', true);
-        senha.focus();
-        return;
-    }
-
-    if (btnEntrar) {
-        btnEntrar.disabled = true;
-        btnEntrar.textContent = 'Entrando...';
-    }
-
-    try {
-        const resultado = await chamarAPI('login', {
-            conferente: nome,
-            senha: senhaInformada
-        });
-
-        if (!resultado.sucesso) {
             mostrarStatusLogin(
-                resultado.mensagem || 'Usuário ou senha incorretos.',
+                resultado.mensagem || 'Não foi possível carregar os conferentes.',
                 true
             );
+
             return;
         }
 
-        sessao = resultado.sessao;
+        select.innerHTML = '';
 
-        mostrarSistema(nome);
+        const opcaoInicial = document.createElement('option');
+        opcaoInicial.value = '';
+        opcaoInicial.textContent = 'Selecione o conferente';
+        opcaoInicial.disabled = true;
+        opcaoInicial.selected = true;
+
+        select.appendChild(opcaoInicial);
+
+        if (!resultado.conferentes || resultado.conferentes.length === 0) {
+
+            mostrarStatusLogin(
+                'Nenhum conferente foi cadastrado ainda.',
+                true
+            );
+
+            return;
+        }
+
+        resultado.conferentes.forEach(function (nome) {
+
+            const opcao = document.createElement('option');
+
+            opcao.value = nome;
+            opcao.textContent = nome;
+
+            select.appendChild(opcao);
+        });
 
     } catch (erro) {
-        console.error(erro);
+
+        console.error('Erro ao carregar conferentes:', erro);
 
         mostrarStatusLogin(
-            'Não foi possível conectar ao sistema.',
+            'Erro ao carregar os conferentes.',
             true
         );
-
-    } finally {
-        if (btnEntrar) {
-            btnEntrar.disabled = false;
-            btnEntrar.textContent = 'Entrar';
-        }
     }
 }
 
 
+// ============================================================
+// LOGIN
+// ============================================================
+
+async function fazerLogin() {
+
+    const campoConferente = document.getElementById('conferente');
+    const campoSenha = document.getElementById('senha');
+
+    const conferente = campoConferente ? campoConferente.value.trim() : '';
+    const senha = campoSenha ? campoSenha.value : '';
+
+    if (!conferente) {
+
+        mostrarStatusLogin(
+            'Selecione um conferente.',
+            true
+        );
+
+        return;
+    }
+
+    if (!senha) {
+
+        mostrarStatusLogin(
+            'Digite a senha.',
+            true
+        );
+
+        return;
+    }
+
+    mostrarStatusLogin('Entrando...', false);
+
+    const resultado = await chamarAPI('login', {
+        conferente: conferente,
+        senha: senha
+    });
+
+    if (!resultado.sucesso) {
+
+        mostrarStatusLogin(
+            resultado.mensagem || 'Não foi possível fazer login.',
+            true
+        );
+
+        return;
+    }
+
+    if (!resultado.sessao) {
+
+        console.error('Login realizado, mas a API não retornou sessão.');
+
+        mostrarStatusLogin(
+            'O login foi realizado, mas a sessão não foi criada.',
+            true
+        );
+
+        return;
+    }
+
+    // Guarda a sessão na memória
+    sessao = resultado.sessao;
+
+    nomeConferente = resultado.conferente || conferente;
+
+    // Guarda também no navegador
+    sessionStorage.setItem(
+        'sessaoConferencia',
+        sessao
+    );
+
+    sessionStorage.setItem(
+        'nomeConferente',
+        nomeConferente
+    );
+
+    console.log('Login realizado.');
+    console.log('Conferente:', nomeConferente);
+    console.log('Sessão armazenada:', sessao ? 'SIM' : 'NÃO');
+
+    mostrarSistema(nomeConferente);
+
+    mostrarStatusSistema(
+        'Login realizado com sucesso.',
+        false
+    );
+
+    limparCamposConferencia();
+}
+
+
+// ============================================================
+// MOSTRAR SISTEMA
+// ============================================================
+
 function mostrarSistema(nome) {
+
     const telaLogin = document.getElementById('telaLogin');
     const telaSistema = document.getElementById('telaSistema');
-    const nomeConferente = document.getElementById('nomeConferente');
-    const pedido = document.getElementById('pedido');
+    const nomeElemento = document.getElementById('nomeConferente');
 
     if (telaLogin) {
         telaLogin.style.display = 'none';
@@ -234,27 +322,36 @@ function mostrarSistema(nome) {
         telaSistema.style.display = 'block';
     }
 
-    if (nomeConferente) {
-        nomeConferente.textContent = nome;
+    if (nomeElemento) {
+        nomeElemento.textContent = nome;
     }
 
-    limparTelaConferencia();
+    const campoPedido = document.getElementById('pedido');
 
-    if (pedido) {
-        pedido.focus();
+    if (campoPedido) {
+
+        setTimeout(function () {
+            campoPedido.focus();
+        }, 100);
     }
 }
 
 
+// ============================================================
+// SAIR
+// ============================================================
+
 function sair() {
+
     sessao = '';
-    pedidoAtual = null;
+    nomeConferente = '';
     itens = [];
+
+    sessionStorage.removeItem('sessaoConferencia');
+    sessionStorage.removeItem('nomeConferente');
 
     const telaLogin = document.getElementById('telaLogin');
     const telaSistema = document.getElementById('telaSistema');
-    const senha = document.getElementById('senha');
-    const conferente = document.getElementById('conferente');
 
     if (telaSistema) {
         telaSistema.style.display = 'none';
@@ -264,193 +361,139 @@ function sair() {
         telaLogin.style.display = 'block';
     }
 
-    if (senha) {
-        senha.value = '';
+    const campoSenha = document.getElementById('senha');
+
+    if (campoSenha) {
+        campoSenha.value = '';
     }
 
-    if (conferente) {
-        conferente.value = '';
+    const campoConferente = document.getElementById('conferente');
+
+    if (campoConferente) {
+        campoConferente.value = '';
     }
 
-    limparTelaConferencia();
+    limparCamposConferencia();
 
     mostrarStatusLogin('', false);
-
-    if (conferente) {
-        conferente.focus();
-    }
 }
 
 
-async function buscarPedido() {
-    const pedidoInput = document.getElementById('pedido');
-    const btnBuscarPedido = document.getElementById('btnBuscarPedido');
+// ============================================================
+// BUSCAR PEDIDO
+// ============================================================
 
-    if (!pedidoInput) {
+async function buscarPedido() {
+
+    const campoPedido = document.getElementById('pedido');
+
+    if (!campoPedido) {
         return;
     }
 
-    const numeroPedido = pedidoInput.value.trim();
+    const numeroPedido = campoPedido.value.trim();
 
     if (!numeroPedido) {
-        mostrarStatusSistema('Informe ou escaneie o número do pedido.', true);
-        pedidoInput.focus();
-        return;
-    }
-
-    if (!sessao) {
-        mostrarStatusSistema('Sua sessão expirou. Faça login novamente.', true);
-        return;
-    }
-
-    if (btnBuscarPedido) {
-        btnBuscarPedido.disabled = true;
-        btnBuscarPedido.textContent = 'Buscando...';
-    }
-
-    esconderResultado();
-    esconderSecaoErro();
-
-    try {
-        const resultado = await chamarAPI('pedido', {
-            sessao: sessao,
-            pedido: numeroPedido
-        });
-
-        if (!resultado.sucesso) {
-            mostrarStatusSistema(
-                resultado.mensagem || 'Pedido não encontrado.',
-                true
-            );
-            return;
-        }
-
-        pedidoAtual = resultado;
-
-        mostrarResultado();
 
         mostrarStatusSistema(
-            `Pedido ${resultado.pedido || numeroPedido} encontrado.`
-        );
-
-    } catch (erro) {
-        console.error(erro);
-
-        mostrarStatusSistema(
-            'Erro ao consultar o pedido.',
+            'Digite ou escaneie um pedido.',
             true
         );
 
-    } finally {
-        if (btnBuscarPedido) {
-            btnBuscarPedido.disabled = false;
-            btnBuscarPedido.textContent = 'Buscar pedido';
+        return;
+    }
+
+    // Recupera a sessão caso a variável tenha sido perdida
+    if (!sessao) {
+
+        const sessaoSalva = sessionStorage.getItem(
+            'sessaoConferencia'
+        );
+
+        if (sessaoSalva) {
+            sessao = sessaoSalva;
         }
     }
-}
 
+    if (!sessao) {
 
-function mostrarResultado() {
-    const secaoResultado = document.getElementById('secaoResultado');
+        mostrarStatusSistema(
+            'Sua sessão expirou. Faça login novamente.',
+            true
+        );
 
-    if (secaoResultado) {
-        secaoResultado.style.display = 'block';
+        return;
     }
 
-    esconderSecaoErro();
+    mostrarStatusSistema(
+        'Buscando pedido...',
+        false
+    );
 
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
+    const resultado = await chamarAPI('pedido', {
+        sessao: sessao,
+        pedido: numeroPedido
+    });
 
-    if (btnRegistrarSemErro) {
-        btnRegistrarSemErro.style.display = 'none';
+    console.log('Resultado da busca:', resultado);
+
+    if (!resultado.sucesso) {
+
+        if (
+            resultado.mensagem &&
+            resultado.mensagem.toLowerCase().includes('sessão')
+        ) {
+
+            sessao = '';
+
+            sessionStorage.removeItem(
+                'sessaoConferencia'
+            );
+
+            mostrarStatusSistema(
+                'Sua sessão expirou. Faça login novamente.',
+                true
+            );
+
+            return;
+        }
+
+        mostrarStatusSistema(
+            resultado.mensagem || 'Pedido não encontrado.',
+            true
+        );
+
+        return;
     }
 
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
+    mostrarStatusSistema(
+        'Pedido encontrado.',
+        false
+    );
 
-    if (btnRegistrarComErro) {
-        btnRegistrarComErro.style.display = 'none';
-    }
-}
+    mostrarResultadoPedido(resultado);
 
-
-function esconderResultado() {
-    const secaoResultado = document.getElementById('secaoResultado');
-
-    if (secaoResultado) {
-        secaoResultado.style.display = 'none';
-    }
-}
-
-
-function selecionarSemErro() {
+    // Limpa a seleção anterior
     itens = [];
+
     atualizarListaItens();
 
-    esconderSecaoErro();
-
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
-
-    if (btnRegistrarSemErro) {
-        btnRegistrarSemErro.style.display = 'block';
-    }
-
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
-
-    if (btnRegistrarComErro) {
-        btnRegistrarComErro.style.display = 'none';
-    }
-
-    mostrarStatusSistema(
-        'Separação marcada como correta. Clique em "Registrar conferência".'
-    );
-}
-
-
-function selecionarComErro() {
-    const secaoErro = document.getElementById('secaoErro');
-
-    if (secaoErro) {
-        secaoErro.style.display = 'block';
-    }
-
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
-
-    if (btnRegistrarSemErro) {
-        btnRegistrarSemErro.style.display = 'none';
-    }
-
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
-
-    if (btnRegistrarComErro) {
-        btnRegistrarComErro.style.display = 'block';
-    }
-
-    mostrarStatusSistema(
-        'Informe os itens que apresentaram erro na separação.'
-    );
-
-    const sku = document.getElementById('sku');
-
-    if (sku) {
-        sku.focus();
-    }
-}
-
-
-function esconderSecaoErro() {
+    // Esconde seção de erro até o usuário escolher "Não"
     const secaoErro = document.getElementById('secaoErro');
 
     if (secaoErro) {
         secaoErro.style.display = 'none';
     }
 
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
+    const btnRegistrarSemErro =
+        document.getElementById('btnRegistrarSemErro');
+
+    const btnRegistrarComErro =
+        document.getElementById('btnRegistrarComErro');
 
     if (btnRegistrarSemErro) {
         btnRegistrarSemErro.style.display = 'none';
     }
-
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
 
     if (btnRegistrarComErro) {
         btnRegistrarComErro.style.display = 'none';
@@ -458,408 +501,692 @@ function esconderSecaoErro() {
 }
 
 
+// ============================================================
+// MOSTRAR RESULTADO DO PEDIDO
+// ============================================================
+
+function mostrarResultadoPedido(resultado) {
+
+    const secaoResultado =
+        document.getElementById('secaoResultado');
+
+    if (secaoResultado) {
+        secaoResultado.style.display = 'block';
+    }
+
+    // Caso o HTML tenha elementos específicos para mostrar os dados
+    const pedido = resultado.pedido || '';
+
+    const data = resultado.data || '';
+    const turno = resultado.turno || '';
+    const separador = resultado.separador || '';
+
+    const elementoPedido =
+        document.getElementById('resultadoPedido');
+
+    const elementoData =
+        document.getElementById('resultadoData');
+
+    const elementoTurno =
+        document.getElementById('resultadoTurno');
+
+    const elementoSeparador =
+        document.getElementById('resultadoSeparador');
+
+    if (elementoPedido) {
+        elementoPedido.textContent = pedido;
+    }
+
+    if (elementoData) {
+        elementoData.textContent = data;
+    }
+
+    if (elementoTurno) {
+        elementoTurno.textContent = turno;
+    }
+
+    if (elementoSeparador) {
+        elementoSeparador.textContent = separador;
+    }
+}
+
+
+// ============================================================
+// SELECIONAR SEM ERRO
+// ============================================================
+
+function selecionarSemErro() {
+
+    itens = [];
+
+    atualizarListaItens();
+
+    const secaoErro =
+        document.getElementById('secaoErro');
+
+    const btnRegistrarSemErro =
+        document.getElementById('btnRegistrarSemErro');
+
+    const btnRegistrarComErro =
+        document.getElementById('btnRegistrarComErro');
+
+    if (secaoErro) {
+        secaoErro.style.display = 'none';
+    }
+
+    if (btnRegistrarSemErro) {
+        btnRegistrarSemErro.style.display = 'block';
+    }
+
+    if (btnRegistrarComErro) {
+        btnRegistrarComErro.style.display = 'none';
+    }
+
+    mostrarStatusSistema(
+        'Separação marcada como correta. Clique em registrar.',
+        false
+    );
+}
+
+
+// ============================================================
+// SELECIONAR COM ERRO
+// ============================================================
+
+function selecionarComErro() {
+
+    const secaoErro =
+        document.getElementById('secaoErro');
+
+    const btnRegistrarSemErro =
+        document.getElementById('btnRegistrarSemErro');
+
+    const btnRegistrarComErro =
+        document.getElementById('btnRegistrarComErro');
+
+    if (secaoErro) {
+        secaoErro.style.display = 'block';
+    }
+
+    if (btnRegistrarSemErro) {
+        btnRegistrarSemErro.style.display = 'none';
+    }
+
+    if (btnRegistrarComErro) {
+        btnRegistrarComErro.style.display = 'block';
+    }
+
+    mostrarStatusSistema(
+        'Informe os itens que possuem erro.',
+        false
+    );
+
+    const campoSKU = document.getElementById('sku');
+
+    if (campoSKU) {
+        campoSKU.focus();
+    }
+}
+
+
+// ============================================================
+// ADICIONAR ITEM
+// ============================================================
+
 function adicionarItem() {
-    const sku = document.getElementById('sku');
-    const qtdSolicitada = document.getElementById('qtdSolicitada');
-    const qtdSeparada = document.getElementById('qtdSeparada');
 
-    if (!sku || !qtdSolicitada || !qtdSeparada) {
-        return;
-    }
+    const campoSKU =
+        document.getElementById('sku');
 
-    const skuValor = sku.value.trim();
-    const solicitadaValor = qtdSolicitada.value.trim();
-    const separadaValor = qtdSeparada.value.trim();
+    const campoQtdSolicitada =
+        document.getElementById('qtdSolicitada');
 
-    if (!skuValor) {
-        mostrarStatusSistema('Informe o SKU/produto.', true);
-        sku.focus();
-        return;
-    }
+    const campoQtdSeparada =
+        document.getElementById('qtdSeparada');
 
-    if (!solicitadaValor) {
-        mostrarStatusSistema('Informe a quantidade solicitada.', true);
-        qtdSolicitada.focus();
-        return;
-    }
+    const sku = campoSKU
+        ? campoSKU.value.trim()
+        : '';
 
-    if (!separadaValor) {
-        mostrarStatusSistema('Informe a quantidade separada.', true);
-        qtdSeparada.focus();
-        return;
-    }
+    const qtdSolicitada = campoQtdSolicitada
+        ? campoQtdSolicitada.value.trim()
+        : '';
 
-    const quantidadeSolicitada = Number(solicitadaValor);
-    const quantidadeSeparada = Number(separadaValor);
+    const qtdSeparada = campoQtdSeparada
+        ? campoQtdSeparada.value.trim()
+        : '';
 
-    if (
-        !Number.isFinite(quantidadeSolicitada) ||
-        quantidadeSolicitada < 0
-    ) {
+    if (!sku) {
+
         mostrarStatusSistema(
-            'A quantidade solicitada é inválida.',
+            'Informe o SKU/produto.',
             true
         );
-        qtdSolicitada.focus();
+
         return;
     }
 
-    if (
-        !Number.isFinite(quantidadeSeparada) ||
-        quantidadeSeparada < 0
-    ) {
+    if (!qtdSolicitada) {
+
         mostrarStatusSistema(
-            'A quantidade separada é inválida.',
+            'Informe a quantidade solicitada.',
             true
         );
-        qtdSeparada.focus();
+
+        return;
+    }
+
+    if (!qtdSeparada) {
+
+        mostrarStatusSistema(
+            'Informe a quantidade separada.',
+            true
+        );
+
         return;
     }
 
     itens.push({
-        sku: skuValor,
-        qtdSolicitada: quantidadeSolicitada,
-        qtdSeparada: quantidadeSeparada
+        sku: sku,
+        qtdSolicitada: qtdSolicitada,
+        qtdSeparada: qtdSeparada
     });
 
     atualizarListaItens();
 
-    sku.value = '';
-    qtdSolicitada.value = '';
-    qtdSeparada.value = '';
+    // Limpa os campos para adicionar outro SKU
+    if (campoSKU) {
+        campoSKU.value = '';
+    }
 
-    sku.focus();
+    if (campoQtdSolicitada) {
+        campoQtdSolicitada.value = '';
+    }
+
+    if (campoQtdSeparada) {
+        campoQtdSeparada.value = '';
+    }
+
+    if (campoSKU) {
+        campoSKU.focus();
+    }
 
     mostrarStatusSistema(
-        'Item adicionado à conferência.'
+        'Item adicionado.',
+        false
     );
 }
 
 
-function atualizarListaItens() {
-    const listaItens = document.getElementById('listaItens');
+// ============================================================
+// ATUALIZAR LISTA DE ITENS
+// ============================================================
 
-    if (!listaItens) {
+function atualizarListaItens() {
+
+    const lista =
+        document.getElementById('listaItens');
+
+    if (!lista) {
         return;
     }
 
-    listaItens.innerHTML = '';
+    lista.innerHTML = '';
 
     if (itens.length === 0) {
-        listaItens.innerHTML = '<p class="lista-vazia">Nenhum item adicionado.</p>';
+
         return;
     }
 
-    itens.forEach((item, indice) => {
-        const card = document.createElement('div');
+    itens.forEach(function (item, indice) {
 
-        card.className = 'item-conferencia';
+        const div = document.createElement('div');
 
-        card.innerHTML = `
-            <div class="item-info">
-                <strong>${escaparHTML(item.sku)}</strong>
-                <span>
-                    Solicitada: ${item.qtdSolicitada}
-                    |
-                    Separada: ${item.qtdSeparada}
-                </span>
-            </div>
+        div.className = 'item-conferencia';
 
-            <button
-                type="button"
-                class="btn-remover"
-                onclick="removerItem(${indice})"
-            >
+        div.innerHTML = `
+            <span>
+                <strong>${escapeHTML(item.sku)}</strong>
+                | Solicitada: ${escapeHTML(item.qtdSolicitada)}
+                | Separada: ${escapeHTML(item.qtdSeparada)}
+            </span>
+
+            <button type="button" data-indice="${indice}">
                 Remover
             </button>
         `;
 
-        listaItens.appendChild(card);
+        const botaoRemover =
+            div.querySelector('button');
+
+        if (botaoRemover) {
+
+            botaoRemover.addEventListener(
+                'click',
+                function () {
+
+                    const posicao =
+                        Number(this.dataset.indice);
+
+                    itens.splice(posicao, 1);
+
+                    atualizarListaItens();
+                }
+            );
+        }
+
+        lista.appendChild(div);
     });
 }
 
 
-function removerItem(indice) {
-    if (indice < 0 || indice >= itens.length) {
+// ============================================================
+// REGISTRAR SEM ERRO
+// ============================================================
+
+async function registrarSemErro() {
+
+    const campoPedido =
+        document.getElementById('pedido');
+
+    const numeroPedido = campoPedido
+        ? campoPedido.value.trim()
+        : '';
+
+    if (!numeroPedido) {
+
+        mostrarStatusSistema(
+            'Informe o pedido antes de registrar.',
+            true
+        );
+
         return;
     }
 
-    itens.splice(indice, 1);
+    if (!sessao) {
 
-    atualizarListaItens();
+        sessao =
+            sessionStorage.getItem('sessaoConferencia') || '';
+    }
 
-    mostrarStatusSistema(
-        'Item removido.'
-    );
-}
+    if (!sessao) {
 
-
-async function registrarSemErro() {
-    if (!pedidoAtual) {
         mostrarStatusSistema(
-            'Nenhum pedido foi consultado.',
+            'Sua sessão expirou. Faça login novamente.',
             true
         );
+
         return;
     }
 
     await enviarConferencia({
         erro: false,
-        itens: [],
-        tipoErro: '',
-        gravidade: '',
-        acaoTomada: '',
-        observacao: ''
+        itens: []
     });
 }
 
 
+// ============================================================
+// REGISTRAR COM ERRO
+// ============================================================
+
 async function registrarComErro() {
-    if (!pedidoAtual) {
+
+    const campoPedido =
+        document.getElementById('pedido');
+
+    const numeroPedido = campoPedido
+        ? campoPedido.value.trim()
+        : '';
+
+    if (!numeroPedido) {
+
         mostrarStatusSistema(
-            'Nenhum pedido foi consultado.',
+            'Informe o pedido antes de registrar.',
             true
         );
+
         return;
     }
 
     if (itens.length === 0) {
+
         mostrarStatusSistema(
-            'Adicione pelo menos um SKU com erro.',
+            'Adicione pelo menos um item com erro.',
             true
         );
+
         return;
     }
 
-    const tipoErro = document.getElementById('tipoErro');
-    const gravidade = document.getElementById('gravidade');
-    const acaoTomada = document.getElementById('acaoTomada');
-    const observacao = document.getElementById('observacao');
+    const tipoErro =
+        obterValor('tipoErro');
 
-    const tipo = tipoErro ? tipoErro.value.trim() : '';
-    const grav = gravidade ? gravidade.value.trim() : '';
-    const acao = acaoTomada ? acaoTomada.value.trim() : '';
-    const obs = observacao ? observacao.value.trim() : '';
+    const gravidade =
+        obterValor('gravidade');
 
-    if (!tipo) {
+    const acaoTomada =
+        obterValor('acaoTomada');
+
+    const observacao =
+        obterValor('observacao');
+
+    if (!tipoErro) {
+
         mostrarStatusSistema(
-            'Selecione o tipo de erro.',
+            'Informe o tipo de erro.',
             true
         );
-        tipoErro.focus();
+
         return;
     }
 
-    if (!grav) {
+    if (!gravidade) {
+
         mostrarStatusSistema(
-            'Selecione a gravidade.',
+            'Informe a gravidade.',
             true
         );
-        gravidade.focus();
+
         return;
     }
 
-    if (!acao) {
+    if (!acaoTomada) {
+
         mostrarStatusSistema(
             'Informe a ação tomada.',
             true
         );
-        acaoTomada.focus();
+
         return;
     }
 
     await enviarConferencia({
         erro: true,
         itens: itens,
-        tipoErro: tipo,
-        gravidade: grav,
-        acaoTomada: acao,
-        observacao: obs
+        tipoErro: tipoErro,
+        gravidade: gravidade,
+        acaoTomada: acaoTomada,
+        observacao: observacao
     });
 }
 
 
-async function enviarConferencia(dadosConferencia) {
-    const btnRegistrarSemErro = document.getElementById('btnRegistrarSemErro');
-    const btnRegistrarComErro = document.getElementById('btnRegistrarComErro');
+// ============================================================
+// ENVIAR CONFERÊNCIA
+// ============================================================
+
+async function enviarConferencia(dados) {
+
+    const campoPedido =
+        document.getElementById('pedido');
+
+    const numeroPedido = campoPedido
+        ? campoPedido.value.trim()
+        : '';
 
     if (!sessao) {
+
+        sessao =
+            sessionStorage.getItem('sessaoConferencia') || '';
+    }
+
+    if (!sessao) {
+
         mostrarStatusSistema(
             'Sua sessão expirou. Faça login novamente.',
             true
         );
+
         return;
-    }
-
-    const pedido =
-        (pedidoAtual && (
-            pedidoAtual.pedido ||
-            pedidoAtual.numeroPedido
-        )) ||
-        document.getElementById('pedido').value.trim();
-
-    if (!pedido) {
-        mostrarStatusSistema(
-            'Número do pedido não identificado.',
-            true
-        );
-        return;
-    }
-
-    if (btnRegistrarSemErro) {
-        btnRegistrarSemErro.disabled = true;
-        btnRegistrarSemErro.textContent = 'Registrando...';
-    }
-
-    if (btnRegistrarComErro) {
-        btnRegistrarComErro.disabled = true;
-        btnRegistrarComErro.textContent = 'Registrando...';
     }
 
     mostrarStatusSistema(
-        'Registrando conferência...'
+        'Registrando conferência...',
+        false
     );
 
-    try {
-        const resultado = await chamarAPI(
-            'registrarConferencia',
-            {
-                sessao: sessao,
-                pedido: pedido,
-                erro: dadosConferencia.erro,
-                itens: dadosConferencia.itens,
-                tipoErro: dadosConferencia.tipoErro,
-                gravidade: dadosConferencia.gravidade,
-                acaoTomada: dadosConferencia.acaoTomada,
-                observacao: dadosConferencia.observacao
-            }
-        );
+    const resultado = await chamarAPI(
+        'registrarConferencia',
+        {
+            sessao: sessao,
+            pedido: numeroPedido,
+            erro: dados.erro,
+            itens: dados.itens,
+            tipoErro: dados.tipoErro || '',
+            gravidade: dados.gravidade || '',
+            acaoTomada: dados.acaoTomada || '',
+            observacao: dados.observacao || ''
+        }
+    );
 
-        if (!resultado.sucesso) {
-            throw new Error(
-                resultado.mensagem ||
-                'Não foi possível registrar a conferência.'
+    console.log(
+        'Resultado do registro:',
+        resultado
+    );
+
+    if (!resultado.sucesso) {
+
+        if (
+            resultado.mensagem &&
+            resultado.mensagem.toLowerCase().includes('sessão')
+        ) {
+
+            sessao = '';
+
+            sessionStorage.removeItem(
+                'sessaoConferencia'
             );
+
+            mostrarStatusSistema(
+                'Sua sessão expirou. Faça login novamente.',
+                true
+            );
+
+            return;
         }
 
         mostrarStatusSistema(
-            '✓ Conferência registrada com sucesso!'
-        );
-
-        limparTelaConferencia();
-
-    } catch (erro) {
-        console.error(erro);
-
-        mostrarStatusSistema(
-            erro.message ||
-            'Erro ao registrar a conferência.',
+            resultado.mensagem ||
+            'Não foi possível registrar a conferência.',
             true
         );
 
-    } finally {
-        if (btnRegistrarSemErro) {
-            btnRegistrarSemErro.disabled = false;
-            btnRegistrarSemErro.textContent = 'Registrar conferência';
-        }
-
-        if (btnRegistrarComErro) {
-            btnRegistrarComErro.disabled = false;
-            btnRegistrarComErro.textContent = 'Registrar conferência';
-        }
+        return;
     }
+
+    mostrarStatusSistema(
+        resultado.mensagem ||
+        'Conferência registrada com sucesso!',
+        false
+    );
+
+    alert(
+        resultado.mensagem ||
+        'Conferência registrada com sucesso!'
+    );
+
+    limparCamposConferencia();
 }
 
 
-function limparTelaConferencia() {
-    pedidoAtual = null;
+// ============================================================
+// LIMPAR CAMPOS DA CONFERÊNCIA
+// ============================================================
+
+function limparCamposConferencia() {
+
     itens = [];
 
-    const pedido = document.getElementById('pedido');
-    const sku = document.getElementById('sku');
-    const qtdSolicitada = document.getElementById('qtdSolicitada');
-    const qtdSeparada = document.getElementById('qtdSeparada');
-    const tipoErro = document.getElementById('tipoErro');
-    const gravidade = document.getElementById('gravidade');
-    const acaoTomada = document.getElementById('acaoTomada');
-    const observacao = document.getElementById('observacao');
+    const campoPedido =
+        document.getElementById('pedido');
 
-    if (pedido) {
-        pedido.value = '';
+    const campoSKU =
+        document.getElementById('sku');
+
+    const campoQtdSolicitada =
+        document.getElementById('qtdSolicitada');
+
+    const campoQtdSeparada =
+        document.getElementById('qtdSeparada');
+
+    const campoTipoErro =
+        document.getElementById('tipoErro');
+
+    const campoGravidade =
+        document.getElementById('gravidade');
+
+    const campoAcao =
+        document.getElementById('acaoTomada');
+
+    const campoObservacao =
+        document.getElementById('observacao');
+
+    if (campoPedido) {
+        campoPedido.value = '';
     }
 
-    if (sku) {
-        sku.value = '';
+    if (campoSKU) {
+        campoSKU.value = '';
     }
 
-    if (qtdSolicitada) {
-        qtdSolicitada.value = '';
+    if (campoQtdSolicitada) {
+        campoQtdSolicitada.value = '';
     }
 
-    if (qtdSeparada) {
-        qtdSeparada.value = '';
+    if (campoQtdSeparada) {
+        campoQtdSeparada.value = '';
     }
 
-    if (tipoErro) {
-        tipoErro.value = '';
+    if (campoTipoErro) {
+        campoTipoErro.value = '';
     }
 
-    if (gravidade) {
-        gravidade.value = '';
+    if (campoGravidade) {
+        campoGravidade.value = '';
     }
 
-    if (acaoTomada) {
-        acaoTomada.value = '';
+    if (campoAcao) {
+        campoAcao.value = '';
     }
 
-    if (observacao) {
-        observacao.value = '';
+    if (campoObservacao) {
+        campoObservacao.value = '';
     }
-
-    esconderResultado();
-    esconderSecaoErro();
 
     atualizarListaItens();
 
-    if (pedido) {
-        pedido.focus();
+    const secaoResultado =
+        document.getElementById('secaoResultado');
+
+    const secaoErro =
+        document.getElementById('secaoErro');
+
+    const btnRegistrarSemErro =
+        document.getElementById('btnRegistrarSemErro');
+
+    const btnRegistrarComErro =
+        document.getElementById('btnRegistrarComErro');
+
+    if (secaoResultado) {
+        secaoResultado.style.display = 'none';
+    }
+
+    if (secaoErro) {
+        secaoErro.style.display = 'none';
+    }
+
+    if (btnRegistrarSemErro) {
+        btnRegistrarSemErro.style.display = 'none';
+    }
+
+    if (btnRegistrarComErro) {
+        btnRegistrarComErro.style.display = 'none';
+    }
+
+    if (campoPedido) {
+
+        setTimeout(function () {
+            campoPedido.focus();
+        }, 100);
     }
 }
 
 
-function mostrarStatusSistema(mensagem, erro = false) {
-    const elemento = document.getElementById('statusSistema');
+// ============================================================
+// PEGAR VALOR DE CAMPO
+// ============================================================
+
+function obterValor(id) {
+
+    const elemento =
+        document.getElementById(id);
+
+    if (!elemento) {
+        return '';
+    }
+
+    return elemento.value.trim();
+}
+
+
+// ============================================================
+// STATUS DO LOGIN
+// ============================================================
+
+function mostrarStatusLogin(mensagem, erro) {
+
+    const elemento =
+        document.getElementById('statusLogin');
 
     if (!elemento) {
         return;
     }
 
     elemento.textContent = mensagem || '';
-    elemento.className = erro
-        ? 'status erro'
-        : 'status sucesso';
+
+    if (erro) {
+        elemento.classList.add('erro');
+    } else {
+        elemento.classList.remove('erro');
+    }
 }
 
 
-function mostrarStatusLogin(mensagem, erro = false) {
-    const elemento = document.getElementById('statusLogin');
+// ============================================================
+// STATUS DO SISTEMA
+// ============================================================
+
+function mostrarStatusSistema(mensagem, erro) {
+
+    const elemento =
+        document.getElementById('statusSistema');
 
     if (!elemento) {
         return;
     }
 
     elemento.textContent = mensagem || '';
-    elemento.className = erro
-        ? 'status erro'
-        : 'status sucesso';
+
+    if (erro) {
+        elemento.classList.add('erro');
+    } else {
+        elemento.classList.remove('erro');
+    }
 }
 
 
-function escaparHTML(valor) {
-    return String(valor)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+// ============================================================
+// PROTEÇÃO CONTRA HTML
+// ============================================================
+
+function escapeHTML(valor) {
+
+    const div =
+        document.createElement('div');
+
+    div.textContent =
+        valor == null ? '' : String(valor);
+
+    return div.innerHTML;
 }
