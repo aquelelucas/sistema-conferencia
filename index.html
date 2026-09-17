@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -14,113 +16,192 @@
 
 <body>
 
-    <main class="container">
+    <!-- =====================================================
+         TELA DE LOGIN
+         ===================================================== -->
 
-        <!-- =========================
-             TELA DE LOGIN
-        ========================== -->
+    <div id="telaLogin">
 
-        <section id="telaLogin" class="card">
+        <div class="login-card">
 
-            <div class="cabecalho">
+            <div class="login-header">
+
+                <div class="logo">
+                    <span class="logo-icon">✓</span>
+                </div>
+
                 <h1>Sistema de Conferência</h1>
-                <p>Identificação do conferente</p>
+
+                <p>
+                    Identificação do conferente
+                </p>
+
             </div>
 
-            <div class="campo">
-                <label for="conferente">
-                    Conferente
-                </label>
 
-                <select id="conferente">
-                    <option value="">
-                        Carregando conferentes...
-                    </option>
-                </select>
-            </div>
+            <div class="login-form">
 
-            <div class="campo">
-                <label for="senha">
-                    Senha
-                </label>
+                <div class="campo">
+
+                    <label for="conferente">
+                        Conferente
+                    </label>
+
+                    <select id="conferente">
+                        <option value="">
+                            Carregando conferentes...
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!--
+                    Campo mantido oculto apenas para compatibilidade
+                    com o script.js atual.
+
+                    O sistema NÃO utiliza senha.
+                -->
 
                 <input
-                    type="password"
+                    type="hidden"
                     id="senha"
-                    placeholder="Digite sua senha"
-                    autocomplete="current-password"
+                    value=""
                 >
+
+
+                <button
+                    type="button"
+                    id="btnEntrar"
+                >
+                    Entrar
+                </button>
+
+
+                <div id="statusLogin"></div>
+
             </div>
 
-            <button
-                type="button"
-                id="btnEntrar"
-                class="btn principal"
-            >
-                Entrar
-            </button>
+        </div>
 
-            <div
-                id="statusLogin"
-                class="status"
-            ></div>
-
-        </section>
+    </div>
 
 
-        <!-- =========================
-             TELA DO SISTEMA
-        ========================== -->
 
-        <section
-            id="telaSistema"
-            class="card"
-            style="display: none;"
-        >
+    <!-- =====================================================
+         SISTEMA PRINCIPAL
+         ===================================================== -->
 
-            <header class="topo-sistema">
+    <div
+        id="telaSistema"
+        style="display: none;"
+    >
+
+        <!-- CABEÇALHO -->
+
+        <header>
+
+            <div class="header-left">
+
+                <div class="header-icon">
+                    ✓
+                </div>
 
                 <div>
-                    <h1>Conferência</h1>
+
+                    <h1>
+                        Sistema de Conferência
+                    </h1>
 
                     <p>
-                        Conferente:
-                        <strong id="nomeConferente"></strong>
+                        Conferência de pedidos
                     </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="header-right">
+
+                <div class="usuario-logado">
+
+                    <span class="usuario-label">
+                        Conferente
+                    </span>
+
+                    <strong id="nomeConferente">
+                        -
+                    </strong>
+
                 </div>
 
                 <button
                     type="button"
                     id="btnSair"
-                    class="btn secundario"
                 >
                     Sair
                 </button>
 
-            </header>
+            </div>
+
+        </header>
 
 
-            <!-- =========================
-                 PEDIDO
-            ========================== -->
 
-            <section class="etapa">
+        <!-- CONTEÚDO -->
 
-                <h2>1. Informe o pedido</h2>
+        <main>
 
-                <div class="linha-pedido">
 
-                    <input
-                        type="text"
-                        id="pedido"
-                        placeholder="Digite ou escaneie o pedido"
-                        autocomplete="off"
-                    >
+            <!-- =================================================
+                 ETAPA 1
+                 ================================================= -->
+
+            <section class="card">
+
+                <div class="section-header">
+
+                    <div class="section-number">
+                        1
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Localizar pedido
+                        </h2>
+
+                        <p>
+                            Digite ou escaneie o código do pedido.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="pedido-area">
+
+                    <div class="pedido-input">
+
+                        <label for="pedido">
+                            Número do pedido
+                        </label>
+
+                        <input
+                            type="text"
+                            id="pedido"
+                            placeholder="Digite ou escaneie o pedido"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
 
                     <button
                         type="button"
                         id="btnBuscarPedido"
-                        class="btn principal"
                     >
                         Buscar pedido
                     </button>
@@ -130,35 +211,131 @@
             </section>
 
 
-            <!-- =========================
-                 RESULTADO
-            ========================== -->
+
+            <!-- =================================================
+                 RESULTADO DO PEDIDO
+                 ================================================= -->
 
             <section
                 id="secaoResultado"
-                class="etapa"
+                class="card"
                 style="display: none;"
             >
 
-                <h2>2. A separação está correta?</h2>
+                <div class="section-header">
 
-                <div class="botoes-escolha">
+                    <div class="section-number">
+                        2
+                    </div>
 
-                    <button
-                        type="button"
-                        id="btnSemErro"
-                        class="btn correto"
-                    >
-                        ✓ Sim, está correta
-                    </button>
+                    <div>
 
-                    <button
-                        type="button"
-                        id="btnComErro"
-                        class="btn erro"
-                    >
-                        ✕ Não, encontrei um erro
-                    </button>
+                        <h2>
+                            Pedido localizado
+                        </h2>
+
+                        <p>
+                            Confira as informações antes de registrar.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="pedido-info">
+
+                    <div class="info-box">
+
+                        <span>
+                            Pedido
+                        </span>
+
+                        <strong id="resultadoPedido">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <span>
+                            Data
+                        </span>
+
+                        <strong id="resultadoData">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <span>
+                            Turno
+                        </span>
+
+                        <strong id="resultadoTurno">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <span>
+                            Separador
+                        </span>
+
+                        <strong id="resultadoSeparador">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     PERGUNTA PRINCIPAL
+                     ============================================= -->
+
+                <div class="pergunta-conferencia">
+
+                    <h2>
+                        A separação está correta?
+                    </h2>
+
+                    <p>
+                        Se estiver tudo certo, registre diretamente.
+                        Caso exista algum erro, selecione "Não".
+                    </p>
+
+
+                    <div class="botoes-resposta">
+
+                        <button
+                            type="button"
+                            id="btnSemErro"
+                        >
+                            <span class="botao-icone">✓</span>
+                            Sim, está correta
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="btnComErro"
+                        >
+                            <span class="botao-icone">!</span>
+                            Não, encontrei erro
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -168,54 +345,77 @@
                 <button
                     type="button"
                     id="btnRegistrarSemErro"
-                    class="btn registrar"
                     style="display: none;"
                 >
                     Registrar conferência
                 </button>
 
-
-                <!-- =========================
-                     REGISTRO COM ERRO
-                ========================== -->
-
-                <section
-                    id="secaoErro"
-                    class="subsecao"
-                    style="display: none;"
-                >
-
-                    <h3>Itens com erro</h3>
-
-                    <p class="ajuda">
-                        Informe cada SKU que apresentou erro
-                        na separação.
-                    </p>
+            </section>
 
 
-                    <!-- SKU -->
 
-                    <div class="campo">
+            <!-- =================================================
+                 CONFERÊNCIA COM ERRO
+                 ================================================= -->
 
-                        <label for="sku">
-                            SKU / Produto
-                        </label>
+            <section
+                id="secaoErro"
+                class="card"
+                style="display: none;"
+            >
 
-                        <input
-                            type="text"
-                            id="sku"
-                            placeholder="Informe ou escaneie o SKU"
-                            autocomplete="off"
-                        >
+                <div class="section-header erro-header">
+
+                    <div class="section-number">
+                        !
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Registrar erro
+                        </h2>
+
+                        <p>
+                            Informe os itens que apresentaram divergência.
+                        </p>
 
                     </div>
 
+                </div>
 
-                    <!-- QUANTIDADES -->
 
-                    <div class="grid-quantidades">
 
-                        <div class="campo">
+                <!-- =============================================
+                     ITEM
+                     ============================================= -->
+
+                <div class="item-form">
+
+                    <h3>
+                        Item com divergência
+                    </h3>
+
+
+                    <div class="linha">
+
+                        <div class="campo campo-sku">
+
+                            <label for="sku">
+                                SKU / Produto
+                            </label>
+
+                            <input
+                                type="text"
+                                id="sku"
+                                placeholder="Informe o SKU"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div class="campo campo-qtd">
 
                             <label for="qtdSolicitada">
                                 Qtd. solicitada
@@ -225,14 +425,14 @@
                                 type="number"
                                 id="qtdSolicitada"
                                 min="0"
-                                step="any"
+                                step="1"
                                 placeholder="0"
                             >
 
                         </div>
 
 
-                        <div class="campo">
+                        <div class="campo campo-qtd">
 
                             <label for="qtdSeparada">
                                 Qtd. separada
@@ -242,165 +442,211 @@
                                 type="number"
                                 id="qtdSeparada"
                                 min="0"
-                                step="any"
+                                step="1"
                                 placeholder="0"
                             >
+
+                        </div>
+
+
+                        <div class="campo campo-botao">
+
+                            <label>
+                                &nbsp;
+                            </label>
+
+                            <button
+                                type="button"
+                                id="btnAdicionarItem"
+                            >
+                                + Adicionar item
+                            </button>
 
                         </div>
 
                     </div>
 
 
-                    <button
-                        type="button"
-                        id="btnAdicionarItem"
-                        class="btn secundario"
-                    >
-                        + Adicionar SKU
-                    </button>
+                    <div id="listaItens"></div>
+
+                </div>
 
 
-                    <!-- LISTA DE ITENS -->
 
-                    <div
-                        id="listaItens"
-                        class="lista-itens"
-                    >
-                        <p class="lista-vazia">
-                            Nenhum item adicionado.
-                        </p>
-                    </div>
+                <!-- =============================================
+                     TIPO DE ERRO
+                     ============================================= -->
 
+                <div class="campo">
 
-                    <!-- DETALHES DO ERRO -->
+                    <label for="tipoErro">
+                        Tipo de erro
+                    </label>
 
-                    <div class="campo">
+                    <select id="tipoErro">
 
-                        <label for="tipoErro">
-                            Tipo de erro
-                        </label>
+                        <option value="">
+                            Selecione o tipo de erro
+                        </option>
 
-                        <select id="tipoErro">
+                        <option value="Falta">
+                            Falta
+                        </option>
 
-                            <option value="">
-                                Selecione o tipo de erro
-                            </option>
+                        <option value="Excesso">
+                            Excesso
+                        </option>
 
-                            <option value="Quantidade incorreta">
-                                Quantidade incorreta
-                            </option>
+                        <option value="Produto incorreto">
+                            Produto incorreto
+                        </option>
 
-                            <option value="Produto incorreto">
-                                Produto incorreto
-                            </option>
+                        <option value="Quantidade incorreta">
+                            Quantidade incorreta
+                        </option>
 
-                            <option value="SKU incorreto">
-                                SKU incorreto
-                            </option>
+                        <option value="Avaria">
+                            Avaria
+                        </option>
 
-                            <option value="Produto faltante">
-                                Produto faltante
-                            </option>
+                        <option value="Outro">
+                            Outro
+                        </option>
 
-                            <option value="Produto excedente">
-                                Produto excedente
-                            </option>
+                    </select>
 
-                            <option value="Outro">
-                                Outro
-                            </option>
-
-                        </select>
-
-                    </div>
+                </div>
 
 
-                    <div class="campo">
 
-                        <label for="gravidade">
-                            Gravidade
-                        </label>
+                <!-- =============================================
+                     GRAVIDADE
+                     ============================================= -->
 
-                        <select id="gravidade">
+                <div class="campo">
 
-                            <option value="">
-                                Selecione a gravidade
-                            </option>
+                    <label for="gravidade">
+                        Gravidade
+                    </label>
 
-                            <option value="Baixa">
-                                Baixa
-                            </option>
+                    <select id="gravidade">
 
-                            <option value="Média">
-                                Média
-                            </option>
+                        <option value="">
+                            Selecione a gravidade
+                        </option>
 
-                            <option value="Alta">
-                                Alta
-                            </option>
+                        <option value="Baixa">
+                            Baixa
+                        </option>
 
-                        </select>
+                        <option value="Média">
+                            Média
+                        </option>
 
-                    </div>
+                        <option value="Alta">
+                            Alta
+                        </option>
 
+                    </select>
 
-                    <div class="campo">
-
-                        <label for="acaoTomada">
-                            Ação tomada
-                        </label>
-
-                        <input
-                            type="text"
-                            id="acaoTomada"
-                            placeholder="Informe a ação tomada"
-                        >
-
-                    </div>
+                </div>
 
 
-                    <div class="campo">
 
-                        <label for="observacao">
-                            Observação
-                        </label>
+                <!-- =============================================
+                     AÇÃO TOMADA
+                     ============================================= -->
 
-                        <textarea
-                            id="observacao"
-                            rows="3"
-                            placeholder="Observações adicionais"
-                        ></textarea>
+                <div class="campo">
 
-                    </div>
+                    <label for="acaoTomada">
+                        Ação tomada
+                    </label>
+
+                    <select id="acaoTomada">
+
+                        <option value="">
+                            Selecione a ação tomada
+                        </option>
+
+                        <option value="Correção realizada">
+                            Correção realizada
+                        </option>
+
+                        <option value="Produto substituído">
+                            Produto substituído
+                        </option>
+
+                        <option value="Quantidade corrigida">
+                            Quantidade corrigida
+                        </option>
+
+                        <option value="Separador comunicado">
+                            Separador comunicado
+                        </option>
+
+                        <option value="Outra ação">
+                            Outra ação
+                        </option>
+
+                    </select>
+
+                </div>
 
 
-                    <button
-                        type="button"
-                        id="btnRegistrarComErro"
-                        class="btn registrar"
-                        style="display: none;"
-                    >
-                        Registrar conferência
-                    </button>
 
-                </section>
+                <!-- =============================================
+                     OBSERVAÇÃO
+                     ============================================= -->
+
+                <div class="campo">
+
+                    <label for="observacao">
+                        Observação
+                    </label>
+
+                    <textarea
+                        id="observacao"
+                        placeholder="Descreva alguma informação importante sobre a conferência..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     REGISTRAR COM ERRO
+                     ============================================= -->
+
+                <button
+                    type="button"
+                    id="btnRegistrarComErro"
+                >
+                    Registrar conferência com erro
+                </button>
 
             </section>
 
 
-            <!-- STATUS -->
 
-            <div
-                id="statusSistema"
-                class="status"
-            ></div>
+            <!-- =================================================
+                 STATUS DO SISTEMA
+                 ================================================= -->
 
-        </section>
+            <div id="statusSistema"></div>
 
-    </main>
+        </main>
 
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
 
     <script src="script.js"></script>
 
 </body>
+
 </html>
