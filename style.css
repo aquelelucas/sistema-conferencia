@@ -1,666 +1,634 @@
-/* =====================================================
-   CONFIGURAÇÕES GERAIS
-   ===================================================== */
+/* =========================================================
+   SISTEMA DE CONFERÊNCIA
+   Visual profissional / logística
+   ========================================================= */
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-html {
-  min-height: 100%;
+:root {
+    --azul: #155eef;
+    --azul-escuro: #0b3b91;
+    --azul-claro: #eef4ff;
+    --verde: #16803c;
+    --verde-claro: #eaf8ef;
+    --vermelho: #d92d20;
+    --vermelho-claro: #fff0ee;
+    --amarelo: #b54708;
+    --amarelo-claro: #fff7e6;
+
+    --cinza-900: #101828;
+    --cinza-700: #344054;
+    --cinza-600: #475467;
+    --cinza-500: #667085;
+    --cinza-400: #98a2b3;
+    --cinza-300: #d0d5dd;
+    --cinza-200: #eaecf0;
+    --cinza-100: #f2f4f7;
+    --cinza-50: #f8fafc;
+
+    --branco: #ffffff;
+
+    --raio: 12px;
+    --sombra: 0 8px 24px rgba(16, 24, 40, 0.08);
+    --sombra-hover: 0 12px 28px rgba(16, 24, 40, 0.12);
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-
-  background: #f2f4f7;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  color: #222;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--cinza-100);
+    color: var(--cinza-900);
+    min-height: 100vh;
 }
 
+/* =========================================================
+   LOGIN
+   ========================================================= */
 
-/* =====================================================
-   CONTAINER
-   ===================================================== */
-
-.container {
-  width: 100%;
-  max-width: 520px;
-
-  margin: 0 auto;
-  padding: 20px 15px;
+#telaLogin {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(21, 94, 239, 0.12), transparent 35%),
+        linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
 }
 
-
-/* =====================================================
-   TELAS
-   ===================================================== */
-
-.tela {
-  width: 100%;
+#telaLogin > div,
+.login-container,
+.login-box,
+.login-card {
+    width: 100%;
+    max-width: 430px;
 }
 
-
-/* =====================================================
-   CARD PRINCIPAL
-   ===================================================== */
-
-.card {
-  width: 100%;
-
-  background: #ffffff;
-
-  border-radius: 18px;
-
-  padding: 22px;
-
-  box-shadow:
-    0 3px 15px rgba(0, 0, 0, 0.12);
+#telaLogin h1 {
+    color: var(--cinza-900);
+    font-size: 28px;
+    margin-bottom: 8px;
+    text-align: center;
 }
 
-
-/* =====================================================
-   LOGO
-   ===================================================== */
-
-.logo {
-  text-align: center;
-
-  font-size: 30px;
-  font-weight: 800;
-
-  letter-spacing: 1px;
-
-  color: #111;
+#telaLogin h2 {
+    color: var(--cinza-900);
+    font-size: 24px;
+    margin-bottom: 8px;
 }
 
-.logo.pequeno {
-  text-align: left;
-
-  font-size: 24px;
+#telaLogin p {
+    color: var(--cinza-500);
+    line-height: 1.5;
 }
 
+/* =========================================================
+   CARD
+   ========================================================= */
 
-/* =====================================================
-   SUBTÍTULO
-   ===================================================== */
-
-.subtitulo {
-  margin-top: 4px;
-  margin-bottom: 22px;
-
-  text-align: center;
-
-  color: #666;
-
-  font-size: 15px;
+.card,
+.login-card,
+.login-box {
+    background: var(--branco);
+    border: 1px solid var(--cinza-200);
+    border-radius: 18px;
+    box-shadow: var(--sombra);
 }
 
-.logo.pequeno + .subtitulo {
-  text-align: left;
+/* =========================================================
+   FORMULÁRIOS
+   ========================================================= */
 
-  margin-bottom: 0;
+label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--cinza-700);
+    font-size: 14px;
+    font-weight: 600;
 }
-
-
-/* =====================================================
-   CAMPOS
-   ===================================================== */
-
-.campo {
-  width: 100%;
-
-  margin-bottom: 17px;
-}
-
-.campo label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  font-size: 15px;
-  font-weight: 700;
-
-  color: #333;
-}
-
-
-/* =====================================================
-   INPUTS / SELECT / TEXTAREA
-   ===================================================== */
 
 input,
 select,
 textarea {
-  width: 100%;
+    width: 100%;
+    border: 1px solid var(--cinza-300);
+    border-radius: 9px;
+    background: var(--branco);
+    color: var(--cinza-900);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-  padding: 14px;
+input,
+select {
+    height: 46px;
+    padding: 0 13px;
+}
 
-  border: 1px solid #cfd4da;
-
-  border-radius: 10px;
-
-  background: #ffffff;
-
-  color: #222;
-
-  font-family: inherit;
-
-  font-size: 17px;
-
-  outline: none;
-
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+textarea {
+    min-height: 100px;
+    padding: 12px 13px;
+    resize: vertical;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #1976d2;
-
-  box-shadow:
-    0 0 0 3px rgba(25, 118, 210, 0.12);
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
 }
 
-textarea {
-  resize: vertical;
-
-  min-height: 100px;
+input::placeholder,
+textarea::placeholder {
+    color: var(--cinza-400);
 }
 
-
-/* =====================================================
+/* =========================================================
    BOTÕES
-   ===================================================== */
+   ========================================================= */
 
-.btn {
-  width: 100%;
-
-  padding: 15px;
-
-  border: 0;
-
-  border-radius: 10px;
-
-  font-size: 17px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    opacity 0.15s ease,
-    transform 0.05s ease;
+button {
+    border: none;
+    border-radius: 9px;
+    min-height: 44px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease,
+        background 0.15s ease;
 }
 
-.btn:active {
-  transform: scale(0.99);
+button:hover {
+    transform: translateY(-1px);
 }
 
-.btn:disabled {
-  opacity: 0.55;
-
-  cursor: not-allowed;
+button:active {
+    transform: translateY(0);
 }
 
-
-/* =====================================================
-   BOTÃO PRINCIPAL
-   ===================================================== */
-
-.btn-principal {
-  background: #1976d2;
-
-  color: #ffffff;
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.btn-principal:hover {
-  background: #1565c0;
+/* Botão principal */
+
+#btnEntrar,
+#btnBuscarPedido {
+    background: var(--azul);
+    color: white;
+    box-shadow: 0 4px 10px rgba(21, 94, 239, 0.22);
 }
 
-
-/* =====================================================
-   BOTÃO SECUNDÁRIO
-   ===================================================== */
-
-.btn-secundario {
-  background: #eceff1;
-
-  color: #263238;
+#btnEntrar:hover,
+#btnBuscarPedido:hover {
+    background: var(--azul-escuro);
+    box-shadow: var(--sombra-hover);
 }
 
-.btn-secundario:hover {
-  background: #e0e4e7;
+/* =========================================================
+   SISTEMA PRINCIPAL
+   ========================================================= */
+
+#telaSistema {
+    min-height: 100vh;
+    background: var(--cinza-100);
 }
 
+/* Cabeçalho */
 
-/* =====================================================
-   BOTÃO SAIR
-   ===================================================== */
-
-.btn-sair {
-  width: auto;
-
-  padding: 9px 14px;
-
-  background: #eceff1;
-
-  color: #424242;
-
-  font-size: 14px;
+.header,
+header {
+    background: var(--branco);
+    border-bottom: 1px solid var(--cinza-200);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-
-/* =====================================================
-   BOTÕES DE RESULTADO
-   ===================================================== */
-
-.btn-sucesso {
-  background: #2e7d32;
-
-  color: #ffffff;
+header h1,
+.header h1 {
+    color: var(--cinza-900);
+    font-size: 22px;
+    font-weight: 800;
 }
 
-.btn-sucesso:hover {
-  background: #256628;
+header p,
+.header p {
+    color: var(--cinza-500);
+    font-size: 13px;
+    margin-top: 3px;
 }
 
-
-.btn-erro {
-  background: #c62828;
-
-  color: #ffffff;
-}
-
-.btn-erro:hover {
-  background: #ad2020;
-}
-
-
-/* =====================================================
-   CABEÇALHO
-   ===================================================== */
-
-.cabecalho {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 15px;
-
-  margin-bottom: 18px;
-}
-
-
-/* =====================================================
-   USUÁRIO LOGADO
-   ===================================================== */
-
-.usuario-logado {
-  padding: 12px 14px;
-
-  margin-bottom: 20px;
-
-  border-radius: 10px;
-
-  background: #f1f8ff;
-
-  color: #555;
-
-  font-size: 14px;
-}
-
-.usuario-logado strong {
-  color: #1976d2;
-}
-
-
-/* =====================================================
-   SEÇÕES
-   ===================================================== */
-
-.secao {
-  margin-top: 20px;
-}
-
-.secao h2,
-.resultado h2,
-.erro-form h2 {
-  margin: 0 0 15px;
-
-  font-size: 20px;
-
-  color: #222;
-}
-
-
-/* =====================================================
-   LINHA DO PEDIDO
-   ===================================================== */
-
-.linha-pedido {
-  display: flex;
-
-  gap: 10px;
-
-  align-items: stretch;
-}
-
-.linha-pedido input {
-  min-width: 0;
-}
-
-.linha-pedido .btn {
-  width: auto;
-
-  min-width: 105px;
-}
-
-
-/* =====================================================
-   LINHA DE CAMPOS
-   ===================================================== */
-
-.linha-campos {
-  display: flex;
-
-  gap: 12px;
-}
-
-.linha-campos .campo {
-  flex: 1;
-
-  min-width: 0;
-}
-
-
-/* =====================================================
-   FORMULÁRIO DO ITEM
-   ===================================================== */
-
-.item-form {
-  padding: 16px;
-
-  margin-bottom: 18px;
-
-  border-radius: 12px;
-
-  background: #f7f9fb;
-
-  border: 1px solid #e4e7eb;
-}
-
-
-/* =====================================================
-   LISTA DE ITENS
-   ===================================================== */
-
-.lista-itens {
-  width: 100%;
-
-  margin-top: 15px;
-}
-
-
-/* =====================================================
-   ITEM INDIVIDUAL
-   ===================================================== */
-
-.item {
-  position: relative;
-
-  padding: 14px;
-
-  margin-bottom: 10px;
-
-  border-radius: 10px;
-
-  background: #ffffff;
-
-  border: 1px solid #dfe3e7;
-
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-.item-cabecalho {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
-
-  margin-bottom: 8px;
-}
-
-.item-numero {
-  font-size: 13px;
-
-  color: #777;
-}
-
-.item-sku {
-  font-size: 18px;
-
-  font-weight: 700;
-
-  color: #1976d2;
-
-  word-break: break-word;
-}
-
-.item-dados {
-  display: flex;
-
-  gap: 20px;
-
-  font-size: 14px;
-
-  color: #555;
-}
-
-.item-dado strong {
-  color: #222;
-}
-
-
-/* =====================================================
-   BOTÃO REMOVER ITEM
-   ===================================================== */
-
-.btn-remover-item {
-  width: auto;
-
-  padding: 7px 10px;
-
-  border: 0;
-
-  border-radius: 7px;
-
-  background: #ffebee;
-
-  color: #c62828;
-
-  font-size: 13px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.btn-remover-item:hover {
-  background: #ffcdd2;
-}
-
-
-/* =====================================================
-   RESULTADO
-   ===================================================== */
-
-.resultado {
-  margin-top: 25px;
-
-  padding-top: 20px;
-
-  border-top: 1px solid #e0e0e0;
-}
-
-.pergunta {
-  margin: 0 0 15px;
-
-  color: #555;
-
-  font-size: 16px;
-}
-
-
-/* =====================================================
-   BOTÕES DE RESULTADO
-   ===================================================== */
-
-.botoes-resultado {
-  display: flex;
-
-  gap: 10px;
-}
-
-.botoes-resultado .btn {
-  flex: 1;
-}
-
-
-/* =====================================================
-   FORMULÁRIO DE ERRO
-   ===================================================== */
-
-.erro-form {
-  margin-top: 20px;
-
-  padding: 18px;
-
-  border-radius: 12px;
-
-  background: #fff8f8;
-
-  border: 1px solid #ffcdd2;
-}
-
-
-/* =====================================================
-   STATUS
-   ===================================================== */
-
-.status {
-  width: 100%;
-
-  padding: 13px 14px;
-
-  margin-top: 15px;
-
-  border-radius: 10px;
-
-  text-align: center;
-
-  font-size: 15px;
-
-  font-weight: 700;
-}
-
-.status.sucesso {
-  background: #e8f5e9;
-
-  color: #2e7d32;
-}
-
-.status.erro {
-  background: #ffebee;
-
-  color: #c62828;
-}
-
-.status.info {
-  background: #e3f2fd;
-
-  color: #1565c0;
-}
-
-
-/* =====================================================
-   OCULTAR
-   ===================================================== */
-
-.oculto {
-  display: none !important;
-}
-
-
-/* =====================================================
-   RESPONSIVIDADE
-   ===================================================== */
-
-@media (max-width: 420px) {
-
-  .container {
-    padding: 12px;
-  }
-
-  .card {
-    padding: 18px;
-  }
-
-  .logo {
-    font-size: 27px;
-  }
-
-  .linha-pedido {
-    flex-direction: column;
-  }
-
-  .linha-pedido .btn {
+/* =========================================================
+   ÁREA PRINCIPAL
+   ========================================================= */
+
+main,
+.container,
+.conteudo,
+.content {
     width: 100%;
-  }
-
-  .linha-campos {
-    flex-direction: column;
-
-    gap: 0;
-  }
-
-  .botoes-resultado {
-    flex-direction: column;
-  }
-
-  .cabecalho {
-    align-items: flex-start;
-  }
-
-  .item-dados {
-    flex-direction: column;
-
-    gap: 5px;
-  }
-
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 50px;
 }
 
+/* =========================================================
+   IDENTIFICAÇÃO DO CONFERENTE
+   ========================================================= */
 
-/* =====================================================
-   TELAS MAIORES
-   ===================================================== */
+#nomeConferente {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul-escuro);
+    font-size: 14px;
+    font-weight: 700;
+}
 
-@media (min-width: 700px) {
+/* =========================================================
+   SEÇÕES
+   ========================================================= */
 
-  .container {
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
+section {
+    margin-bottom: 20px;
+}
 
+#secaoResultado,
+#secaoErro {
+    background: var(--branco);
+    border: 1px solid var(--cinza-200);
+    border-radius: var(--raio);
+    padding: 22px;
+    box-shadow: var(--sombra);
+}
+
+section h2,
+section h3 {
+    color: var(--cinza-900);
+    margin-bottom: 15px;
+}
+
+section h2 {
+    font-size: 20px;
+}
+
+section h3 {
+    font-size: 17px;
+}
+
+/* =========================================================
+   BUSCA DE PEDIDO
+   ========================================================= */
+
+#pedido {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+#btnBuscarPedido {
+    min-width: 150px;
+}
+
+/* =========================================================
+   RESULTADO DO PEDIDO
+   ========================================================= */
+
+#secaoResultado {
+    animation: aparecer 0.25s ease;
+}
+
+#secaoResultado p {
+    margin-bottom: 8px;
+    color: var(--cinza-600);
+}
+
+#secaoResultado strong {
+    color: var(--cinza-900);
+}
+
+/* =========================================================
+   PERGUNTA PRINCIPAL
+   ========================================================= */
+
+#secaoResultado h2 {
+    font-size: 22px;
+}
+
+#btnSemErro,
+#btnComErro {
+    min-height: 58px;
+    font-size: 17px;
+    border-radius: 11px;
+    padding: 0 28px;
+}
+
+#btnSemErro {
+    background: var(--verde-claro);
+    color: var(--verde);
+    border: 2px solid #a6e0b9;
+}
+
+#btnSemErro:hover {
+    background: #dff5e6;
+    box-shadow: 0 6px 16px rgba(22, 128, 60, 0.12);
+}
+
+#btnComErro {
+    background: var(--vermelho-claro);
+    color: var(--vermelho);
+    border: 2px solid #f2b8b5;
+}
+
+#btnComErro:hover {
+    background: #ffe3e0;
+    box-shadow: 0 6px 16px rgba(217, 45, 32, 0.12);
+}
+
+/* =========================================================
+   ÁREA DE ERRO
+   ========================================================= */
+
+#secaoErro {
+    border-top: 4px solid var(--vermelho);
+    animation: aparecer 0.25s ease;
+}
+
+#secaoErro h2,
+#secaoErro h3 {
+    color: var(--cinza-900);
+}
+
+/* =========================================================
+   ITENS / SKU
+   ========================================================= */
+
+#sku {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+}
+
+#qtdSolicitada,
+#qtdSeparada {
+    text-align: center;
+    font-weight: 600;
+}
+
+#btnAdicionarItem {
+    background: var(--cinza-900);
+    color: white;
+}
+
+#btnAdicionarItem:hover {
+    background: #1d2939;
+}
+
+/* Lista de itens */
+
+#listaItens {
+    margin-top: 15px;
+}
+
+#listaItens:empty {
+    display: none;
+}
+
+.item-conferencia,
+.item,
+.lista-item {
+    background: var(--cinza-50);
+    border: 1px solid var(--cinza-200);
+    border-radius: 10px;
+    padding: 13px;
+    margin-bottom: 9px;
+}
+
+/* =========================================================
+   CAMPOS DE ERRO
+   ========================================================= */
+
+#tipoErro,
+#gravidade,
+#acaoTomada {
+    background-color: white;
+}
+
+/* Gravidade */
+
+#gravidade {
+    font-weight: 600;
+}
+
+/* =========================================================
+   BOTÕES DE REGISTRO
+   ========================================================= */
+
+#btnRegistrarSemErro,
+#btnRegistrarComErro {
+    width: 100%;
+    min-height: 54px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+#btnRegistrarSemErro {
+    background: var(--verde);
+    color: white;
+    box-shadow: 0 5px 14px rgba(22, 128, 60, 0.2);
+}
+
+#btnRegistrarSemErro:hover {
+    background: #126b32;
+    box-shadow: var(--sombra-hover);
+}
+
+#btnRegistrarComErro {
+    background: var(--azul);
+    color: white;
+    box-shadow: 0 5px 14px rgba(21, 94, 239, 0.2);
+}
+
+#btnRegistrarComErro:hover {
+    background: var(--azul-escuro);
+    box-shadow: var(--sombra-hover);
+}
+
+/* =========================================================
+   SAIR
+   ========================================================= */
+
+#btnSair {
+    background: transparent;
+    color: var(--cinza-600);
+    border: 1px solid var(--cinza-300);
+    min-height: 38px;
+}
+
+#btnSair:hover {
+    background: var(--cinza-100);
+    color: var(--cinza-900);
+}
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+#statusLogin,
+#statusSistema {
+    margin-top: 12px;
+    padding: 11px 13px;
+    border-radius: 9px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#statusLogin:empty,
+#statusSistema:empty {
+    display: none;
+}
+
+/* =========================================================
+   ORGANIZAÇÃO DOS FORMULÁRIOS
+   ========================================================= */
+
+/*
+   Caso o HTML use divs normais para agrupar campos,
+   estas regras deixam os espaços mais agradáveis.
+*/
+
+form {
+    width: 100%;
+}
+
+.form-group,
+.campo,
+.field {
+    margin-bottom: 16px;
+}
+
+.row,
+.linha,
+.form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.row > *,
+.linha > *,
+.form-row > * {
+    flex: 1;
+}
+
+/* =========================================================
+   ANIMAÇÕES
+   ========================================================= */
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    header,
+    .header {
+        padding: 15px 18px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    main,
+    .container,
+    .conteudo,
+    .content {
+        padding: 20px 14px 40px;
+    }
+
+    #secaoResultado,
+    #secaoErro {
+        padding: 17px;
+    }
+
+    #btnBuscarPedido {
+        width: 100%;
+    }
+
+    #btnSemErro,
+    #btnComErro {
+        width: 100%;
+        min-height: 54px;
+    }
+
+    .row,
+    .linha,
+    .form-row {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+
+    #telaLogin {
+        padding: 15px;
+    }
+
+    #telaLogin h1 {
+        font-size: 24px;
+    }
+
+    input,
+    select {
+        height: 48px;
+    }
+
+    button {
+        min-height: 46px;
+    }
+
+    #secaoResultado,
+    #secaoErro {
+        border-radius: 10px;
+    }
+}
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(21, 94, 239, 0.25);
+    outline-offset: 2px;
 }
